@@ -24,3 +24,13 @@ spring:
           uri: lb://tracking-service
           predicates:
             - Path=/tracking/**
+
+        - id: shipper-service
+          uri: lb://shipper-service
+          predicates:
+            - Path=/shipper/**
+
+#        - id: config-server
+#          uri: lb://localhost:8761
+#          predicates:
+#            - Path=/eureka/**
