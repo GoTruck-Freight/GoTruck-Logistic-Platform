@@ -1,6 +1,5 @@
 package com.gotruck.shipperservice.config;
 
-import com.gotruck.shipperservice.Enum.Role;
 import com.gotruck.shipperservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,5 @@
 package com.gotruck.shipperservice.model;
 
-import com.gotruck.shipperservice.Enum.AccountStatus;
-import com.gotruck.shipperservice.service.ImageService;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +8,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -69,7 +66,7 @@ public class User implements UserDetails {
 //    @Column(nullable = false)
 
 //    private Role role;
-    private AccountStatus accountStatus;
+//    private AccountStatus accountStatus;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

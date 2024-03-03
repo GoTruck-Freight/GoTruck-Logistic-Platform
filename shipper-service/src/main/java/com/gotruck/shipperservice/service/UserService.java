@@ -20,6 +20,5 @@ public interface  UserService<UserProfile> {
 
     ResponseEntity<String> deleteUserByEmail(String email);
 
-
 }
 
