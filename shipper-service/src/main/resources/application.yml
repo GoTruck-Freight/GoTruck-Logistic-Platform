@@ -39,6 +39,18 @@ default:
 
 eureka:
   client:
+    registerWithEureka: true
     serviceUrl:
       defaultZone: ${EUREKA_DEFAULT_ZONE}
+    healthcheck:
+      enabled: true
 
+#this is for actuator
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: "*"

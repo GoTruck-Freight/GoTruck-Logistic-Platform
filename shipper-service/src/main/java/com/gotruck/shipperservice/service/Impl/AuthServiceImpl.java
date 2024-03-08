@@ -20,8 +20,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
-
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl  implements AuthService {
@@ -101,15 +99,14 @@ public class AuthServiceImpl  implements AuthService {
     }
 
     @Override
-    public void resetPassword(ResetPasswordRequest request) {
+    public void resetPassword(String token, ResetPasswordRequest request) {
         String email = request.getEmail();
-        String resetToken = request.getToken();
         // E-posta adresinden kullanıcıyı bulma işlemi
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found with email: " + email));
 
         // Token'in doğruluğunu ve geçerliliğini kontrol etme işlemi
-        if (jwtService.validationToken(resetToken, user)) {
+        if (jwtService.validationToken(token, user)) {
             // Yeni şifreyi ayarlama işlemi
             String newPassword = request.getNewPassword();
             user.setPassword(passwordEncoder.encode(newPassword));
@@ -119,4 +116,6 @@ public class AuthServiceImpl  implements AuthService {
             throw new RuntimeException("Invalid or expired token");
         }
     }
+
 }
+

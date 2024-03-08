@@ -11,12 +11,15 @@ COPY mvnw.cmd ./
 COPY pom.xml ./
 COPY src ./src
 
-# Copy the .env file into the container at /app
-COPY src/main/resources/env.properties /app/env.properties
+# Create a config directory in the container
+RUN mkdir -p /app/config
 
+# Copy the configuration file into the container at /app/config
+COPY src/main/resources/env.properties /app/config/
+
+# Environment variable set et
 ENV UPLOAD_DIR=/app/static/images/ProfileImage/
 ENV DEFAULT_IMAGE_PATH=/app/static/images/driverrr-image.jpeg
-
 
 # Run Maven command to download project dependencies
 RUN ./mvnw -N io.takari:maven:wrapper -Dmaven=3.8.4
@@ -34,7 +37,7 @@ EXPOSE 9091
 ENV SPRING_PROFILES_ACTIVE=production
 ENV SPRING_CONFIG_LOCATION=/app/config/
 ENV JAVA_OPTS=""
-ENV ENV_FILE_PATH=/app/env.properties
+ENV ENV_FILE_PATH=/app/config/env.properties
 
-# Define the command to run the Spring Boot application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar -Dspring.config.location=$SPRING_CONFIG_LOCATION -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE /app/target/shipper-service.jar --spring.config.additional-location=file:${ENV_FILE_PATH}"]
+# Define the command to run the Spring Boot application using Maven Wrapper
+ENTRYPOINT ["sh", "-c", "./mvnw spring-boot:run -Dspring.config.location=file:/app/config/application.yml -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE"]

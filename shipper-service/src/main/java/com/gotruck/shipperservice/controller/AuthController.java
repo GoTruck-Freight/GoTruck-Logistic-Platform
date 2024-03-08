@@ -7,13 +7,11 @@ import com.gotruck.shipperservice.service.AuthService;
 import com.gotruck.shipperservice.service.EmailService;
 import com.gotruck.shipperservice.service.Impl.JWTServiceImpl;
 import com.gotruck.shipperservice.service.UserService;
-import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,7 +25,6 @@ public class AuthController {
     private EmailService emailService;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private JWTServiceImpl jwtService;
 
@@ -49,11 +46,13 @@ public class AuthController {
 
     @PostMapping("/reset-password/{token}")
     public ResponseEntity<?> resetPassword(@PathVariable("token") String token, @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        resetPasswordRequest.setToken(token);
-        authService.resetPassword(resetPasswordRequest);
+        ResetPasswordRequest request = new ResetPasswordRequest();
+        request.setEmail(resetPasswordRequest.getEmail());
+        request.setNewPassword(resetPasswordRequest.getNewPassword());
+
+        authService.resetPassword(token, resetPasswordRequest);
         return ResponseEntity.ok("Password reset successfully");
     }
-
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(Authentication authentication) {
@@ -66,24 +65,6 @@ public class AuthController {
         }
     }
 
-//    @DeleteMapping("/delete")
-//    public ResponseEntity<String> deleteUser() {
-//        // Mevcut oturumu al
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        // Eğer oturum varsa, kullanıcının kimliğini al ve hesabını sil
-//        if (authentication != null) {
-//            String userEmail = authentication.getName(); // Kullanıcının email adresini al
-//
-//            // UserService aracılığıyla hesabı sil
-//            userService.deleteUserByEmail(userEmail);
-//
-//            return ResponseEntity.ok("Hesabınız uğurla silindi, yenidən görüşənədək!");
-//        } else {
-//            // Oturum açık değilse, yetkisiz erişim hatası döndür
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Yetkisiz erişim.");
-//        }
-//    }
 }
 
 

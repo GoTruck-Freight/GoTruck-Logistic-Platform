@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -27,11 +26,6 @@ import java.util.Optional;
 @RequestMapping("api/v1/shipper-user")
 
 public class UserController {
-    @GetMapping()
-    public ResponseEntity<String> sayHi() {
-        return ResponseEntity.ok("HI USER");
-    }
-
 
     @Autowired
     private UserService userService;
@@ -86,22 +80,6 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }
-
-
-//    @RolesAllowed({"USER","ADMIN"})
-//    @GetMapping("/getUserProfile")
-//    public ResponseEntity getUserProfile(Principal principal){
-//        return ResponseEntity.status(HttpStatus.OK).body(UserService.getProfile(principal));
-//    }
-
-//@GetMapping("/profile")
-//public <UserProfile> ResponseEntity<UserProfile> getUserProfile() {
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    String userEmail = authentication.getName();
-//    UserProfile userProfile = userService.getUserProfile(userEmail);
-//    return ResponseEntity.status(HttpStatus.OK).body(userProfile);
-//}
-
 
 
 

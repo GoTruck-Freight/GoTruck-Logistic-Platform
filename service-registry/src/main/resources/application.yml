@@ -5,9 +5,20 @@ spring:
   application:
     name: service-registry
 
+#this is for eureka server
 eureka:
   instance:
     hostname: localhost
   client:
     register-with-eureka: false
     fetch-registry: false
+
+#this is for actuator
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: "*"

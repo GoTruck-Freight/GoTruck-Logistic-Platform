@@ -10,5 +10,7 @@ public interface AuthService {
     User register (RegisterRequest registerRequest);
     public JwtAuthResponse login(LoginRequest loginRequest);
     void forgotPassword(String email);
-    void resetPassword(ResetPasswordRequest request);
+//    void resetPassword(ResetPasswordRequest request);
+
+    void resetPassword(String token, ResetPasswordRequest request);
 }
