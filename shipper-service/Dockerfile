@@ -19,7 +19,7 @@ COPY src/main/resources/env.properties /app/config/
 
 # Environment variable set et
 ENV UPLOAD_DIR=/app/static/images/ProfileImage/
-ENV DEFAULT_IMAGE_PATH=/app/static/images/driverrr-image.jpeg
+ENV DEFAULT_IMAGE_PATH=/app/images/driverrr-image.jpeg
 
 # Run Maven command to download project dependencies
 RUN ./mvnw -N io.takari:maven:wrapper -Dmaven=3.8.4

@@ -10,8 +10,10 @@ import com.gotruck.shipperservice.service.AuthService;
 import com.gotruck.shipperservice.service.EmailService;
 import com.gotruck.shipperservice.service.ImageService;
 import com.gotruck.shipperservice.service.JwtService;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -85,7 +87,6 @@ public class AuthServiceImpl  implements AuthService {
         return jwtAuthResponse;
     }
 
-
     @Override
     public void forgotPassword(String email) {
         User user = userRepository.findByEmail(email)
@@ -100,22 +101,22 @@ public class AuthServiceImpl  implements AuthService {
 
     @Override
     public void resetPassword(String token, ResetPasswordRequest request) {
-        String email = request.getEmail();
-        // E-posta adresinden kullanıcıyı bulma işlemi
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found with email: " + email));
 
-        // Token'in doğruluğunu ve geçerliliğini kontrol etme işlemi
-        if (jwtService.validationToken(token, user)) {
-            // Yeni şifreyi ayarlama işlemi
-            String newPassword = request.getNewPassword();
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-        } else {
-            // Token geçerli değilse veya kullanıcı eşleşmiyorsa hata işleme
-            throw new RuntimeException("Invalid or expired token");
-        }
+        // Extract user ID from the token
+        Long userId = jwtService.extractUserId(token);
+
+        // Fetch user from the database
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        // Update the user's password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        // Save the updated user
+        userRepository.save(user);
     }
-
 }
+
+
+
 

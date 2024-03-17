@@ -54,3 +54,16 @@ management:
     web:
       exposure:
         include: "*"
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+logging:
+  config: classpath:log4j2-spring.xml
+
+  boot:
+  admin:
+  client:
+  url: http://localhost:8080

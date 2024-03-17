@@ -9,9 +9,7 @@ import com.gotruck.shipperservice.service.Impl.JWTServiceImpl;
 import com.gotruck.shipperservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,29 +44,13 @@ public class AuthController {
 
     @PostMapping("/reset-password/{token}")
     public ResponseEntity<?> resetPassword(@PathVariable("token") String token, @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        ResetPasswordRequest request = new ResetPasswordRequest();
-        request.setEmail(resetPasswordRequest.getEmail());
-        request.setNewPassword(resetPasswordRequest.getNewPassword());
-
         authService.resetPassword(token, resetPasswordRequest);
         return ResponseEntity.ok("Password reset successfully");
     }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-            String userEmail = authentication.getName();
-            userService.deleteUserByEmail(userEmail);
-            return ResponseEntity.ok("Hesabınız başarıyla silindi.");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Yetkisiz erişim.");
-        }
-    }
-
 }
 
 
-//    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+/*   public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
 //        // Tarayıcıda bulunan JWT token'ini veya cookie'yi sil
 //        ResponseCookie cookie = ResponseCookie.from("JWT_TOKEN", "")
 //                .maxAge(0)
@@ -91,5 +73,5 @@ public class AuthController {
 //        if (authentication != null) {
 //            SecurityContextHolder.getContext().setAuthentication(null);
 //        }
-//    }
+//    }*/
 

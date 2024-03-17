@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-//@Slf4j
 //@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
@@ -78,6 +77,17 @@ public class UserController {
     public ResponseEntity<List<User>> getUsersByCompanyName(@PathVariable("company_name") String companyName) {
         List<User> users = userRepository.findByCompanyName(companyName);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteUser(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            String userEmail = authentication.getName();
+            userService.deleteUserByEmail(userEmail);
+            return ResponseEntity.ok("Hesabınız başarıyla silindi.");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Yetkisiz erişim.");
+        }
     }
 }
 

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
@@ -21,39 +22,48 @@ public class JWTServiceImpl implements JwtService {
 
     private final Key SECRET_KEY = getSigning();
 
-//    signing key
     private Key getSigning() {
         return Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-//    extracting userName
     @Override
     public String extractUserName(String token) {
-        return extractClaims(token,Claims::getSubject);
+        return extractClaims(token, Claims::getSubject);
     }
 
-//    generating token
     @Override
     public String generateToken(UserDetails userDetails) {
-        return   Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) //1 gün
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .claim("userId", ((User) userDetails).getId())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) // 1 day
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-//    generating reset token
     public String generateResetToken(User user) {
-        return   Jwts.builder()
-                .setSubject(Long.toString(user.getId()) )// Ve ya user.getUserName() kimi uygun bir metodu kullanın
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+        return Jwts.builder()
+                .subject(Long.toString(user.getId()))
+                .claim("email", user.getEmail())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-//    extracting claims
+    @Override
+    public Boolean validationToken(String token, UserDetails userDetails) {
+        final String username = extractUserName(token);
+        final Long userId = extractUserId(token);
+        return (username.equals(userDetails.getUsername()) && userId.equals(((User) userDetails).getId()) && !isTokenExpired(token));
+    }
+
+
+    public Long extractUserId(String token) {
+        return Long.parseLong(extractClaims(token, Claims::getSubject));
+    }
+
     public <T> T extractClaims(String token, Function<Claims, T> claimsResolver){
         final Claims claims=extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -61,18 +71,17 @@ public class JWTServiceImpl implements JwtService {
 
     private Claims extractAllClaims(String token){
         try {
-            return Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+            return Jwts
+                    .parser()
+                    .verifyWith((SecretKey) SECRET_KEY)
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseSignedClaims(token)
+                    .getPayload();
         } catch (SignatureException e) {
-            throw new RuntimeException("Token uyğunsuzdur");
+            throw new RuntimeException("Invalid token");
         }
     }
 
-
-//    checking expiration
     public Date getExpirationDateFromToken(String token){
         return extractClaims(token,Claims::getExpiration);
     }
@@ -80,12 +89,5 @@ public class JWTServiceImpl implements JwtService {
     private Boolean isTokenExpired(String token){
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
-    }
-
-    @Override
-    public Boolean validationToken(String token, UserDetails userDetails) {
-        final String username = extractUserName(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-
     }
 }
