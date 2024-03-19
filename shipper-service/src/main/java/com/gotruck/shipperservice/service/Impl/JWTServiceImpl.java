@@ -44,7 +44,7 @@ public class JWTServiceImpl implements JwtService {
 
     public String generateResetToken(User user) {
         return Jwts.builder()
-                .subject(Long.toString(user.getId()))
+                .claim("userId", user.getId())
                 .claim("email", user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
@@ -52,17 +52,35 @@ public class JWTServiceImpl implements JwtService {
                 .compact();
     }
 
+//    @Override
+//    public Boolean validationToken(String token, UserDetails userDetails) {
+//        final String username = extractUserName(token);
+//        final Long userId = extractUserId(token);
+//        return (username.equals(userDetails.getUsername()) && userId.equals(((User) userDetails).getId()) && !isTokenExpired(token));
+//    }
     @Override
     public Boolean validationToken(String token, UserDetails userDetails) {
         final String username = extractUserName(token);
         final Long userId = extractUserId(token);
-        return (username.equals(userDetails.getUsername()) && userId.equals(((User) userDetails).getId()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && userId.equals(getUserIdFromUserDetails(userDetails)) && !isTokenExpired(token));
     }
 
+    private Long getUserIdFromUserDetails(UserDetails userDetails) {
+        if (userDetails instanceof User) {
+            return ((User) userDetails).getId();
+        }
+        return null; // Handle other user details implementations if needed
+    }
+
+//    public Long extractUserId(String token) {
+//        return Long.parseLong(extractClaims(token, Claims::getSubject));
+//    }
 
     public Long extractUserId(String token) {
-        return Long.parseLong(extractClaims(token, Claims::getSubject));
+        Claims claims = extractAllClaims(token);
+        return claims.get("userId", Long.class);
     }
+
 
     public <T> T extractClaims(String token, Function<Claims, T> claimsResolver){
         final Claims claims=extractAllClaims(token);

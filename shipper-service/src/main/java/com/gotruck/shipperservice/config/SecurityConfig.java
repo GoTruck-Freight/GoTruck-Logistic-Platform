@@ -1,5 +1,6 @@
 package com.gotruck.shipperservice.config;
 
+import com.gotruck.shipperservice.model.User;
 import com.gotruck.shipperservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,8 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtAuthFilter jwtAuthFilter;
-    private final UserService userService;
+    private final UserService<User> userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,10 +35,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/reset-password/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/v1/shipper-user/**").authenticated()
-//                        .requestMatchers("/api/v1/admin","/question/upload").hasAuthority(Role.ADMIN.name())
-//                        .requestMatchers("/api/v1/shipper-user").hasAuthority(Role.USER.name())
-                        .anyRequest().authenticated())
-
+                        .requestMatchers("/api/v1/uploadFile/**").authenticated())
+//                      .requestMatchers("/api/v1/shipper-user").hasAuthority(Role.USER.name())
+//                        .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -46,7 +48,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userService.userDetailsService());
+        authenticationProvider.setUserDetailsService((UserDetailsService) userService);// Set the UserDetailsService implementation directly
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }

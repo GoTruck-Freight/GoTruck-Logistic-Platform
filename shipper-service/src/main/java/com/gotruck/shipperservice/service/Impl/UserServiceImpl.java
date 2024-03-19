@@ -17,14 +17,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+
+
 import java.util.Collections;
 import java.util.Optional;
 
 @EnableWebSecurity
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
+
     private ImageService imageService;
 
     @Override
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
             public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
                 return userRepository.findByEmail(email)
                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
             }
         };
     }
@@ -42,13 +46,15 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        // Create a UserDetails object using the user’s information
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                // Rollerin olmadığına dikkat edin, boş bir liste olarak sağlanmıştır.
                 Collections.emptyList()
         );
     }
+
 
     @Override
     public Object getUserProfile(String email) {
@@ -59,11 +65,11 @@ public class UserServiceImpl implements UserService {
                     userProfile.setCompanyName(user.getCompanyName());
                     userProfile.setContactName(user.getContactName());
                     userProfile.setPhoneNumber(user.getPhoneNumber());
-                    userProfile.setImage(user.getImage() != null ? user.getImage() : imageService.getDefaultImageUrl()); // Kullanıcının resmi varsa onu kullan, yoksa varsayılan resmi kullan
+                    userProfile.setImage(user.getImage() != null ? user.getImage() : imageService.getDefaultImageUrl()); // Use the user-uploaded image if available; otherwise, use the default image.
                     return userProfile;
                 })
 
-                .orElseThrow(() -> new NotFoundException("User not found with email: " + email)); // Kullanıcı bulunamazsa hata döndür
+                .orElseThrow(() -> new NotFoundException("User not found with email: " + email)); //Return an error if the user is not found
     }
 
     @Override
@@ -80,7 +86,7 @@ public class UserServiceImpl implements UserService {
                     return userProfile;
                 })
 
-                .orElseThrow(() -> new NotFoundException("User not found 🤨" )); // Kullanıcı bulunamazsa hata döndür
+                .orElseThrow(() -> new NotFoundException("User not found 🤨")); // Return an error if the user is not found.
     }
 
     @Override
@@ -133,6 +139,4 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with email " + email + " not found");
         }
     }
-
-
 }

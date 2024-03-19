@@ -117,6 +117,32 @@ public class AuthServiceImpl  implements AuthService {
     }
 }
 
+//    public ResponseEntity<String> resetPassword(ResetPasswordRequest resetPasswordRequest) {
+//        String email = resetPasswordRequest.getEmail();
+//        String token = resetPasswordRequest.getToken();
+//        String newPassword = resetPasswordRequest.getNewPassword();
+//
+//        // Kullanıcıyı email adresine göre bul
+//        Optional<User> optionalUser = userRepository.findByEmail(email);
+//        if (optionalUser.isEmpty()) {
+//            throw new BadRequestException("Kullanıcı bulunamadı");
+//        }
+//        User user = optionalUser.get();
+//
+//        // Token'in geçerli olup olmadığını kontrol et
+//        if (!isValidToken(user, token)) {
+//            throw new BadRequestException("Geçersiz veya süresi dolmuş token");
+//        }
+//
+//        // Yeni şifreyi encode et ve kullanıcıya ata
+//        user.setPassword(passwordEncoder.encode(newPassword));
+//        userRepository.save(user);
+//
+//        return ResponseEntity.ok("Şifre başarıyla değiştirildi");
+//    }
+//
+//}
+
 
 
 
