@@ -17,7 +17,17 @@ public class ImageServiceImpl implements ImageService {
     public void deleteImage(String fileName) {
         File file = new File(uploadDir + fileName);
         if (file.exists()) {
-            file.delete();
+            boolean deletionResult = file.delete();
+            if (deletionResult) {
+                // Log success message using a logger
+                System.out.println("File deleted successfully: " + fileName);
+            } else {
+                // Log failure message using a logger
+                System.err.println("Failed to delete the file: " + fileName);
+            }
+        } else {
+            // Throw custom exception if file not found
+            throw new IllegalArgumentException("File not found: " + fileName);
         }
     }
 

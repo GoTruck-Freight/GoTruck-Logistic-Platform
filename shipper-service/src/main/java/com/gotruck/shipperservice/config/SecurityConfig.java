@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
-    private final UserService<User> userService;
+    private final UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,9 +35,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/reset-password/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/v1/shipper-user/**").authenticated()
-                        .requestMatchers("/api/v1/uploadFile/**").authenticated())
+                        .requestMatchers("/api/v1/uploadFile/**").authenticated()
 //                      .requestMatchers("/api/v1/shipper-user").hasAuthority(Role.USER.name())
-//                        .anyRequest().authenticated())
+                        .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

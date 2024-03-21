@@ -25,11 +25,15 @@ public class FileUploadController {
     @Value("${upload.dir}")
     private String uploadDir;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
+    private  UserRepository userRepository;
     private ImageService imageService;
+    @Autowired
+    public FileUploadController(UserRepository userRepository, ImageService imageService){
+        this.userRepository = userRepository;
+        this.imageService = imageService;
+    }
+
+
 
     @PostMapping("/uploadFile")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, Principal principal) {
@@ -42,27 +46,28 @@ public class FileUploadController {
                 .orElseThrow(() -> new NotFoundException("User not found with email: " + userEmail));
 
         try {
-            // Önceki resmi sil
+            // Previous image deletion
             String oldImage = user.getImage();
             if (oldImage != null) {
                 imageService.deleteImage(oldImage);
             }
 
-            // Kullanıcının dosya yüklemesi için bir dosya adı oluştur
+            // Create a file name for the user's file upload
             String fileName = file.getOriginalFilename();
 
-            // Dosyayı belirtilen yere kaydet
+            // Save the file to the specified location
             Path path = Paths.get(uploadDir + fileName);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
-            // Kullanıcının profil resmi alanını güncelle
+            // Update the user's profile image field
             user.setImage(fileName);
             userRepository.save(user);
 
+
             return ResponseEntity.ok().body("File uploaded successfully");
         } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to upload file: " + e.getMessage());
         }
     }
 

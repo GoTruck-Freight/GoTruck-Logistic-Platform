@@ -4,10 +4,11 @@ import com.gotruck.shipperservice.model.User;
 import com.gotruck.shipperservice.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,11 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JWTServiceImpl implements JwtService {
 
-    private final Key SECRET_KEY = getSigning();
+//    private final Key SECRET_KEY = getSigning();
+    @Value("${security.jwt.secret-key}")
+    private String SECRET_KEY;
+    SecretKey secretKey = Jwts.SIG.HS256.key().build();
 
-    private Key getSigning() {
-        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    }
 
     @Override
     public String extractUserName(String token) {
@@ -32,55 +33,62 @@ public class JWTServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(UserDetails userDetails) {
+    public String generateAccessToken(UserDetails userDetails) {
+        
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("userId", ((User) userDetails).getId())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) // 1 day
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 12)) // 12 hours
+                .signWith(secretKey)
                 .compact();
     }
 
-    public String generateResetToken(User user) {
+    @Override
+    public String generateRefreshToken(UserDetails userDetails) {
+        if (isAuthorized(userDetails)) {
+            throw new IllegalArgumentException("User is not authorized to generate refresh token");
+        }
         return Jwts.builder()
-                .claim("userId", user.getId())
-                .claim("email", user.getEmail())
+                .subject(userDetails.getUsername())
+                .claim("userId", ((User) userDetails).getId())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+                .signWith(secretKey)
+                .compact();
+
+    }
+
+    @Override
+    public String generateResetToken(UserDetails userDetails) {
+        if (isAuthorized(userDetails)) {
+            throw new IllegalArgumentException("User is not authorized to generate refresh token");
+        }
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .claim("userId", ((User) userDetails).getId())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .signWith(secretKey)
                 .compact();
     }
 
-//    @Override
-//    public Boolean validationToken(String token, UserDetails userDetails) {
-//        final String username = extractUserName(token);
-//        final Long userId = extractUserId(token);
-//        return (username.equals(userDetails.getUsername()) && userId.equals(((User) userDetails).getId()) && !isTokenExpired(token));
-//    }
+
+    private boolean isAuthorized(UserDetails userDetails) {
+        return false;
+    }
+
     @Override
     public Boolean validationToken(String token, UserDetails userDetails) {
         final String username = extractUserName(token);
         final Long userId = extractUserId(token);
-        return (username.equals(userDetails.getUsername()) && userId.equals(getUserIdFromUserDetails(userDetails)) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && userId.equals(((User) userDetails).getId()) && !isTokenExpired(token));
     }
-
-    private Long getUserIdFromUserDetails(UserDetails userDetails) {
-        if (userDetails instanceof User) {
-            return ((User) userDetails).getId();
-        }
-        return null; // Handle other user details implementations if needed
-    }
-
-//    public Long extractUserId(String token) {
-//        return Long.parseLong(extractClaims(token, Claims::getSubject));
-//    }
 
     public Long extractUserId(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("userId", Long.class);
     }
-
 
     public <T> T extractClaims(String token, Function<Claims, T> claimsResolver){
         final Claims claims=extractAllClaims(token);
@@ -91,7 +99,7 @@ public class JWTServiceImpl implements JwtService {
         try {
             return Jwts
                     .parser()
-                    .verifyWith((SecretKey) SECRET_KEY)
+                    .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
@@ -107,5 +115,10 @@ public class JWTServiceImpl implements JwtService {
     private Boolean isTokenExpired(String token){
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
+    }
+
+    private Key singingtKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

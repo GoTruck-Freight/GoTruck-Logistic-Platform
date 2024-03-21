@@ -24,11 +24,14 @@ import java.util.Optional;
 
 @EnableWebSecurity
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService, UserDetailsService {
-    private final UserRepository userRepository;
 
-    private ImageService imageService;
+    private final UserRepository userRepository;
+    private final ImageService imageService;
+    public UserServiceImpl(UserRepository userRepository, ImageService imageService){
+        this.userRepository = userRepository;
+        this.imageService = imageService;
+    }
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -57,7 +60,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
     @Override
-    public Object getUserProfile(String email) {
+    public UserProfile getUserProfile(String email) {
         return userRepository.findByEmail(email)
                 .map(user -> {
                     UserProfile userProfile = new UserProfile();
@@ -133,7 +136,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             // Delete the user from the database
             userRepository.delete(userOptional.get());
             // Return a success response message
-            return ResponseEntity.ok().body("User with email " + email + " has been deleted successfully");
+            return ResponseEntity.ok().body("User has been deleted successfully");
         } else {
             // If user not found, return an appropriate error message
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with email " + email + " not found");

@@ -1,14 +1,12 @@
 package com.gotruck.shipperservice.service;
 
+import com.gotruck.shipperservice.dto.UserProfile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-
-public interface  UserService<UserProfile> {
+public interface  UserService {
     UserDetailsService userDetailsService();
-
-//    UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
 
     UserProfile getUserProfile(String email);
 

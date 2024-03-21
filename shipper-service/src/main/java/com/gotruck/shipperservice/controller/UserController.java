@@ -21,17 +21,18 @@ import java.util.Optional;
 
 //@CrossOrigin(origins = "*")
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("api/v1/shipper-user")
 
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private  UserRepository userRepository;
-    @Autowired
-    private final AuthService authService;
+    private final UserService userService;
+    private final UserRepository userRepository;
+
+    public UserController(UserService userService, UserRepository userRepository) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+    }
+
 
     @GetMapping("/getUserProfile")
     public ResponseEntity getUserProfile(Principal principal){
@@ -51,6 +52,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
     @GetMapping("/getUserById/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -90,28 +92,3 @@ public class UserController {
         }
     }
 }
-
-
-
-//@GetMapping("/client/getUserId")
-//public ResponseEntity<?> getUserId(@RequestParam String email) {
-//    return ResponseEntity.status(HttpStatus.OK).body(UserService.getIdByEmail(email));
-//}
-//
-//@RolesAllowed({"ROLE_MEMBER", "ROLE_ADMIN", "ROLE_PARTNER", "ROLE_SYSTEMADMIN"})
-//@GetMapping("/profile/getUserProfile")
-//public ResponseEntity getUserProfile(Principal principal) {
-//    return ResponseEntity.status(HttpStatus.OK).body(userService.getProfile(principal));
-//}
-//
-//@RolesAllowed({"ROLE_MEMBER", "ROLE_ADMIN", "ROLE_PARTNER", "ROLE_SYSTEMADMIN"})
-//@PostMapping("/profile/updateProfile")
-//public ResponseEntity updateProfile(Principal principal, @RequestBody User user) {
-//    return ResponseEntity.status(HttpStatus.OK).body(userService.updateProfile(principal, user));
-////}
-//@RolesAllowed({"ROLE_MEMBER", "ROLE_ADMIN", "ROLE_PARTNER", "ROLE_SYSTEMADMIN"})
-//@GetMapping("/getAllUser")
-//public ResponseEntity getAllUser(Principal principal) {
-//    return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers(principal));
-//}
-

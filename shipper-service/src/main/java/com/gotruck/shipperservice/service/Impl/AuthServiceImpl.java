@@ -10,34 +10,40 @@ import com.gotruck.shipperservice.service.AuthService;
 import com.gotruck.shipperservice.service.EmailService;
 import com.gotruck.shipperservice.service.ImageService;
 import com.gotruck.shipperservice.service.JwtService;
-import jakarta.ws.rs.BadRequestException;
+import io.jsonwebtoken.JwtException;
+import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl  implements AuthService {
-    @Autowired
+
     private final UserRepository userRepository;
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-    @Autowired
-    private final AuthenticationManager authenticationManager;
-    @Autowired
-    private final JwtService jwtService;
-    @Autowired
-    private final EmailService emailService;
-    @Autowired
+    private  AuthenticationManager authenticationManager;
+    private  JwtService jwtService;
+    private  EmailService emailService;
     private ImageService imageService;
 
+    @Autowired
+    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, EmailService emailService, ImageService imageService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.emailService = emailService;
+        this.imageService = imageService;
+    }
     @Override
     public User register(RegisterRequest registerRequest) {
         // E-posta adresinin daha önceden kullanılıp kullanılmadığını kontrol et
@@ -80,10 +86,12 @@ public class AuthServiceImpl  implements AuthService {
         var user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        var jwt = jwtService.generateToken(user);
+        var jwt = jwtService.generateAccessToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
-        jwtAuthResponse.setToken(jwt);
+        jwtAuthResponse.setAccessToken(jwt);
+        jwtAuthResponse.setRefreshToken(refreshToken);
         return jwtAuthResponse;
     }
 
@@ -94,26 +102,33 @@ public class AuthServiceImpl  implements AuthService {
 
         String resetToken = jwtService.generateResetToken(user);
 //        String resetLink = "http://gotruck.com/reset-password?token=" + resetToken;
-        String resetLink = "http://localhost:9091/reset-password?token=" + resetToken;
+        String resetLink = "http://localhost:9091/api/v1/auth/reset-password/token/" + resetToken;
         String emailBody = "To reset your password, click on the link below:\n" + resetLink;
         emailService.sendEmail(email, "Password Reset", emailBody);
     }
 
     @Override
     public void resetPassword(String token, ResetPasswordRequest request) {
+        try {
+            // Extract user ID from the token
+            Long userId = jwtService.extractUserId(token);
 
-        // Extract user ID from the token
-        Long userId = jwtService.extractUserId(token);
+            // Fetch user from the database
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException("User not found"));
 
-        // Fetch user from the database
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+            // Update the user's password
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
-        // Update the user's password
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-
-        // Save the updated user
-        userRepository.save(user);
+            // Save the updated user
+            userRepository.save(user);
+        } catch (JwtException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+        } catch (NotFoundException e) {
+            throw e; // Bu durumda özel olarak ele alınacak bir hata değil, doğrudan fırlatılıyor
+        } catch (Exception e) {
+            throw new InternalServerErrorException("An error occurred while resetting the password");
+        }
     }
 }
 

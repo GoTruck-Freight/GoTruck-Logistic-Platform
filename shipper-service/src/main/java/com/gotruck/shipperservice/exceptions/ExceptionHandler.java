@@ -15,4 +15,11 @@ public class ExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage());
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), errorResponse.getStatus());
     }
+
+//    @ExceptionHandler(UnauthorizedException.class)
+//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+//    protected ResponseEntity<Object> handleUnauthorizedException(UnauthorizedException ex, WebRequest request) {
+//        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, "Unauthorized", ex.getMessage());
+//        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+//    }
 }
