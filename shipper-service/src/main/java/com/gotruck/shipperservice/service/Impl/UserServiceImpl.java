@@ -35,14 +35,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetailsService userDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-                return userRepository.findByEmail(email)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-            }
-        };
+        return email -> userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Override
@@ -57,7 +51,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 Collections.emptyList()
         );
     }
-
 
     @Override
     public UserProfile getUserProfile(String email) {

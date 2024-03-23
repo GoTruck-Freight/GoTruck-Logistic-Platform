@@ -2,17 +2,12 @@ package com.gotruck.shipperservice.controller;
 
 import com.gotruck.shipperservice.dto.*;
 import com.gotruck.shipperservice.model.User;
-import com.gotruck.shipperservice.repository.UserRepository;
 import com.gotruck.shipperservice.service.AuthService;
-import com.gotruck.shipperservice.service.EmailService;
-import com.gotruck.shipperservice.service.Impl.JWTServiceImpl;
-import com.gotruck.shipperservice.service.UserService;
+import com.gotruck.shipperservice.service.JwtService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,26 +43,26 @@ public class AuthController {
         return ResponseEntity.ok("Password reset successfully");
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        // Tarayıcıda bulunan JWT token'ini veya cookie'yi sil
+        Cookie cookie = new Cookie("JWT_TOKEN", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Logged out successfully");
+    }
 
-//    @PostMapping("/reset-password")
-//    public ResponseEntity<?> resetPassword(@RequestHeader("Authorization") String token, @RequestBody ResetPasswordRequest resetPasswordRequest) {
-//        authService.resetPassword(token, resetPasswordRequest);
-//        return ResponseEntity.ok("Password reset successfully");
-//    }
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtAuthResponse> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        try {
+            JwtAuthResponse jwtAuthResponse = authService.refreshAccessToken(refreshTokenRequest);
+            return ResponseEntity.ok(jwtAuthResponse);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build(); // Or handle specific error cases
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
-
-
-//    @PostMapping("/logout")
-////    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-//        // Tarayıcıda bulunan JWT token'ini veya cookie'yi sil
-//        ResponseCookie cookie = ResponseCookie.from("JWT_TOKEN", "")
-//                .maxAge(0)
-//                .httpOnly(true)
-//                .path("/")
-//                .build();
-//        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-//
-//        // Oturumu sonlandırma işlemi tamamlandıktan sonra başarılı bir response dön
-//        return ResponseEntity.ok().build();
-//    }
-//}

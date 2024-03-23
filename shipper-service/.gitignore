@@ -8,6 +8,12 @@ target/
 mvnw
 mvnw.cmd
 
+# Log files
+*.log
+*.class
+*.jar
+*.war
+
 ### STS ###
 .apt_generated
 .classpath

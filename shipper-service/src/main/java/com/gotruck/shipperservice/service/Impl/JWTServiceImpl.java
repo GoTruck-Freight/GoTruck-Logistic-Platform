@@ -21,11 +21,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JWTServiceImpl implements JwtService {
 
-//    private final Key SECRET_KEY = getSigning();
-    @Value("${security.jwt.secret-key}")
-    private String SECRET_KEY;
-    SecretKey secretKey = Jwts.SIG.HS256.key().build();
-
+//    @Value("${security.jwt.secret-key}")
+    private String SECRET_KEY = "3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b";
+//    SecretKey secretKey = Jwts.SIG.HS256.key().build();
+     SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
 
     @Override
     public String extractUserName(String token) {
@@ -39,7 +38,7 @@ public class JWTServiceImpl implements JwtService {
                 .subject(userDetails.getUsername())
                 .claim("userId", ((User) userDetails).getId())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 12)) // 12 hours
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5)) // 5 min
                 .signWith(secretKey)
                 .compact();
     }
@@ -72,7 +71,6 @@ public class JWTServiceImpl implements JwtService {
                 .signWith(secretKey)
                 .compact();
     }
-
 
     private boolean isAuthorized(UserDetails userDetails) {
         return false;
@@ -117,8 +115,4 @@ public class JWTServiceImpl implements JwtService {
         return expiration.before(new Date());
     }
 
-    private Key singingtKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
 }

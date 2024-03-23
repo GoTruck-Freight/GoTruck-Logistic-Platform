@@ -1,9 +1,6 @@
 package com.gotruck.shipperservice.service.Impl;
 
-import com.gotruck.shipperservice.dto.JwtAuthResponse;
-import com.gotruck.shipperservice.dto.LoginRequest;
-import com.gotruck.shipperservice.dto.RegisterRequest;
-import com.gotruck.shipperservice.dto.ResetPasswordRequest;
+import com.gotruck.shipperservice.dto.*;
 import com.gotruck.shipperservice.model.User;
 import com.gotruck.shipperservice.repository.UserRepository;
 import com.gotruck.shipperservice.service.AuthService;
@@ -130,33 +127,33 @@ public class AuthServiceImpl  implements AuthService {
             throw new InternalServerErrorException("An error occurred while resetting the password");
         }
     }
+
+    public JwtAuthResponse refreshAccessToken(RefreshTokenRequest refreshTokenRequest) {
+        try {
+            String userEmail = jwtService.extractUserName(refreshTokenRequest.getRefreshToken());
+            User user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found for email: " + userEmail));
+
+            if (jwtService.validationToken(refreshTokenRequest.getRefreshToken(), user)) {
+                // Generate a new access token and refresh token
+                var newAccessToken = jwtService.generateAccessToken(user);
+                var newRefreshToken = jwtService.generateRefreshToken(user);
+
+                JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+                jwtAuthResponse.setAccessToken(newAccessToken);
+                jwtAuthResponse.setRefreshToken(newRefreshToken);
+
+                return jwtAuthResponse;
+            } else {
+                throw new IllegalArgumentException("Invalid refresh token");
+            }
+        } catch (Exception e) {
+            // Handle any exceptions and return an appropriate response
+            return new JwtAuthResponse(); // Or handle specific error cases
+        }
+    }
 }
 
-//    public ResponseEntity<String> resetPassword(ResetPasswordRequest resetPasswordRequest) {
-//        String email = resetPasswordRequest.getEmail();
-//        String token = resetPasswordRequest.getToken();
-//        String newPassword = resetPasswordRequest.getNewPassword();
-//
-//        // Kullanıcıyı email adresine göre bul
-//        Optional<User> optionalUser = userRepository.findByEmail(email);
-//        if (optionalUser.isEmpty()) {
-//            throw new BadRequestException("Kullanıcı bulunamadı");
-//        }
-//        User user = optionalUser.get();
-//
-//        // Token'in geçerli olup olmadığını kontrol et
-//        if (!isValidToken(user, token)) {
-//            throw new BadRequestException("Geçersiz veya süresi dolmuş token");
-//        }
-//
-//        // Yeni şifreyi encode et ve kullanıcıya ata
-//        user.setPassword(passwordEncoder.encode(newPassword));
-//        userRepository.save(user);
-//
-//        return ResponseEntity.ok("Şifre başarıyla değiştirildi");
-//    }
-//
-//}
 
 
 
