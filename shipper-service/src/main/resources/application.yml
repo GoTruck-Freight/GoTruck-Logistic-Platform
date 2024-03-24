@@ -50,15 +50,23 @@ management:
   tracing:
     sampling:
       probability: 1.0
+  endpoint:
+    prometheus:
+      enabled: true
   endpoints:
     web:
       exposure:
         include: "*"
+#        include: health, metrics, prometheus
     health:
       show-details: always
   info:
     env:
       enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 logging:
   config: classpath:log4j2-spring.xml

@@ -33,5 +33,27 @@ services:
     networks:
       - my_network
 
+    # Prometheus
+  prometheus:
+      container_name: prometheus
+      image: prom/prometheus:v2.40.0
+      ports:
+        - "9090:9090"
+      volumes:
+        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yaml
+      networks:
+        - my_network
+
+    # Grafana
+  grafana:
+      container_name: grafana
+      image: grafana/grafana-oss:latest
+      ports:
+        - "3000:3000"
+      environment:
+        GH_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+      networks:
+        - my_network
+
 networks:
   my_network:
