@@ -7,20 +7,21 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 @Repository
-public interface TruckNameRepository extends JpaRepository<TruckName, UUID> {
+public interface TruckNameRepository extends JpaRepository<TruckName, Long> {
+
     // Save a new TruckName object
     TruckName save(TruckName truckName);
 
     // Find a TruckName object by its ID
-    Optional<TruckName> findById(UUID id);
+    Optional<TruckName> findById(Long id);
 
     // Get all TruckName objects
     List<TruckName> findAll();
 
     // Delete a TruckName object by its ID
-    void deleteById(UUID id);
+    void deleteById(Long id);
 
 }

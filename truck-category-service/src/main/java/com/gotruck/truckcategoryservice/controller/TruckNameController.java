@@ -6,10 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/truck-names")
+@RequestMapping("/api/v1/truck-names")
 public class TruckNameController {
 
     private final TruckNameService truckNameService;
@@ -20,7 +19,7 @@ public class TruckNameController {
     }
 
     @GetMapping
-    public List<TruckNameDTO> getAllTruckNames(){
+    public List<String> getAllTruckNames(){
         return truckNameService.getAllTruckNames();
     }
 
@@ -30,12 +29,12 @@ public class TruckNameController {
     }
 
     @PutMapping("/{id}")
-    public TruckNameDTO updateTruckName(@PathVariable UUID id, @RequestBody TruckNameDTO truckNameDTO) {
+    public TruckNameDTO updateTruckName(@PathVariable Long id, @RequestBody TruckNameDTO truckNameDTO) {
         return truckNameService.updateTruckName(id, truckNameDTO);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTruckName(@PathVariable UUID id) {
+    public void deleteTruckName(@PathVariable Long id) {
         truckNameService.deleteTruckName(id);
     }
 

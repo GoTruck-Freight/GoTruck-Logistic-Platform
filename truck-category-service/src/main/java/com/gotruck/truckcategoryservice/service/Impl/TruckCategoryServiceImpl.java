@@ -1,12 +1,13 @@
 package com.gotruck.truckcategoryservice.service.Impl;
 
 import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
-import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
 import com.gotruck.truckcategoryservice.exceptions.TruckCategoryNotFoundException;
+import com.gotruck.truckcategoryservice.exceptions.TruckNameNotFoundException;
 import com.gotruck.truckcategoryservice.model.TruckCategory;
+import com.gotruck.truckcategoryservice.model.TruckName;
 import com.gotruck.truckcategoryservice.repository.TruckCategoryRepository;
+import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
 import com.gotruck.truckcategoryservice.service.TruckCategoryService;
-import com.gotruck.truckcategoryservice.service.TruckNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,31 +19,34 @@ import java.util.stream.Collectors;
 @Service
 public class TruckCategoryServiceImpl implements TruckCategoryService {
     private final TruckCategoryRepository truckCategoryRepository;
-    private final TruckNameService truckNameService;
+    private final TruckNameRepository truckNameRepository;
 
     @Autowired
-    public TruckCategoryServiceImpl(TruckCategoryRepository truckCategoryRepository, TruckNameService truckNameService) {
+    public TruckCategoryServiceImpl(TruckCategoryRepository truckCategoryRepository, TruckNameRepository truckNameRepository) {
         this.truckCategoryRepository = truckCategoryRepository;
-        this.truckNameService = truckNameService;
+        this.truckNameRepository = truckNameRepository;
     }
 
     @Override
     public List<TruckCategoryDTO> getAllTruckCategories() {
         List<TruckCategory> truckCategories = truckCategoryRepository.findAll();
         return truckCategories.stream()
-                .map(this::convertToDTO)
+                .map(truckCategory -> new TruckCategoryDTO(truckCategory.getId(),
+                                      truckCategory.getDescription(), truckCategory.getMaxLoadCapacity(),
+                                      truckCategory.getCargoAreaWidth(), truckCategory.getCargoAreaLength(),
+                                      truckCategory.getCargoAreaHeight(), truckCategory.getCargoCubicVolume(),
+                                      truckCategory.getTruckNameId()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public TruckCategoryDTO getTruckCategoryById(Long id) {
         Optional<TruckCategory> truckCategoryOptional = truckCategoryRepository.findById(id);
-        if (truckCategoryOptional.isPresent()){
+        if (truckCategoryOptional.isPresent()) {
             TruckCategory truckCategory = truckCategoryOptional.get();
             return getTruckCategoryDTO(truckCategory);
-        }
-        else{
-            throw new TruckCategoryNotFoundException("Truck category not found with id: " +id);
+        } else {
+            throw new TruckCategoryNotFoundException("Truck category not found with id: " + id);
         }
     }
 
@@ -56,33 +60,34 @@ public class TruckCategoryServiceImpl implements TruckCategoryService {
         truckCategoryDTO.setCargoAreaLength(truckCategory.getCargoAreaLength());
         truckCategoryDTO.setCargoAreaHeight(truckCategory.getCargoAreaHeight());
         truckCategoryDTO.setCargoCubicVolume(truckCategory.getCargoCubicVolume());
-//        truckCategoryDTO.setTruckNameId(truckCategory.getTruckNameId());
-        truckCategoryDTO.setTruckName(truckCategoryDTO.getTruckName());
+        truckCategoryDTO.setTruckNameId(truckCategoryDTO.getTruckNameId());
 
         return truckCategoryDTO;
     }
 
     @Override
     public TruckCategoryDTO addNewTruckCategory(TruckCategoryDTO truckCategoryDTO) {
-        TruckCategory newTruckCategory = new TruckCategory();
-        newTruckCategory.setDescription(truckCategoryDTO.getDescription());
-        newTruckCategory.setMaxLoadCapacity(truckCategoryDTO.getMaxLoadCapacity());
-        newTruckCategory.setCargoAreaWidth(truckCategoryDTO.getCargoAreaWidth());
-        newTruckCategory.setCargoAreaLength(truckCategoryDTO.getCargoAreaLength());
-        newTruckCategory.setCargoAreaHeight(truckCategoryDTO.getCargoAreaHeight());
-        newTruckCategory.setCargoCubicVolume(truckCategoryDTO.getCargoCubicVolume());
+        // Gelen truckNameId ile ilgili TruckName'i bul
+        Optional<TruckName> truckNameOptional = truckNameRepository.findById(truckCategoryDTO.getTruckNameId());
+        if (truckNameOptional.isPresent()) {
+            TruckCategory newTruckCategory = new TruckCategory();
+            newTruckCategory.setDescription(truckCategoryDTO.getDescription());
+            newTruckCategory.setMaxLoadCapacity(truckCategoryDTO.getMaxLoadCapacity());
+            newTruckCategory.setCargoAreaWidth(truckCategoryDTO.getCargoAreaWidth());
+            newTruckCategory.setCargoAreaLength(truckCategoryDTO.getCargoAreaLength());
+            newTruckCategory.setCargoAreaHeight(truckCategoryDTO.getCargoAreaHeight());
+            newTruckCategory.setCargoCubicVolume(truckCategoryDTO.getCargoCubicVolume());
 
-        // Get the TruckNameDTO from TruckCategoryDTO
-        TruckNameDTO truckNameDTO = truckCategoryDTO.getTruckName();
-        if (truckNameDTO == null || truckNameDTO.getId() == null) {
-            throw new IllegalArgumentException("Truck name DTO or ID cannot be null");
+            // TruckName'den gelen ID'yi TruckCategory'ye ata
+            newTruckCategory.setTruckNameId(truckCategoryDTO.getTruckNameId());
+
+            // Yeni TruckCategory'yi veritabanına kaydet
+            TruckCategory savedTruckCategory = truckCategoryRepository.save(newTruckCategory);
+            return getTruckCategoryDTO(savedTruckCategory);
+        } else {
+            // TruckName bulunamadı hatası fırlat
+            throw new TruckNameNotFoundException("Truck name not found with id: " + truckCategoryDTO.getTruckNameId());
         }
-
-         String truckNameId = truckNameService.getTruckNameById(truckNameDTO.getId());
-         newTruckCategory.setTruckNameId(truckNameId);
-
-        TruckCategory savedTruckCategory = truckCategoryRepository.save(newTruckCategory);
-        return getTruckCategoryDTO(savedTruckCategory);
     }
 
     @Override
@@ -114,20 +119,5 @@ public class TruckCategoryServiceImpl implements TruckCategoryService {
     public void deleteTruckCategory(Long id) {
         truckCategoryRepository.deleteById(id);
     }
-
-
-    private TruckCategoryDTO convertToDTO(TruckCategory truckCategory) {
-        TruckCategoryDTO truckCategoryDTO = new TruckCategoryDTO();
-        truckCategoryDTO.setId(truckCategory.getId());
-        truckCategoryDTO.setDescription(truckCategory.getDescription());
-        truckCategoryDTO.setMaxLoadCapacity(truckCategory.getMaxLoadCapacity());
-        truckCategoryDTO.setCargoAreaWidth(truckCategory.getCargoAreaWidth());
-        truckCategoryDTO.setCargoAreaLength(truckCategory.getCargoAreaLength());
-        truckCategoryDTO.setCargoAreaHeight(truckCategory.getCargoAreaHeight());
-        truckCategoryDTO.setCargoCubicVolume(truckCategory.getCargoCubicVolume());
-        truckCategoryDTO.setTruckNameId(truckCategoryDTO.getTruckNameId());
-        return truckCategoryDTO;
-    }
-
 
 }

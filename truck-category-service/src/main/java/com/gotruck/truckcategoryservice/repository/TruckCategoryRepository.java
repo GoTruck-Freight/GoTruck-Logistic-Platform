@@ -13,6 +13,7 @@ import java.util.UUID;
 @Repository
 public interface TruckCategoryRepository extends JpaRepository<TruckCategory, Long> {
 
+
     // Find a TruckCategory object by its ID
     Optional<TruckCategory> findById(Long id);
 
@@ -24,4 +25,7 @@ public interface TruckCategoryRepository extends JpaRepository<TruckCategory, Lo
 
     // Delete a TruckCategory object by its ID
     void deleteById(Long id);
+
+
+
 }

@@ -3,13 +3,16 @@ package com.gotruck.truckcategoryservice.service;
 import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface TruckNameService {
-    List<TruckNameDTO> getAllTruckNames();
-    String getTruckNameById(UUID truckNameId);
+    List<String> getAllTruckNames();
+
+    TruckNameDTO findTruckNameById(Long id);
+
     TruckNameDTO addNewTruckName(TruckNameDTO truckNameDTO);
-    TruckNameDTO updateTruckName(UUID id, TruckNameDTO truckNameDTO);
-    void deleteTruckName(UUID id);
+
+    TruckNameDTO updateTruckName(Long id, TruckNameDTO truckNameDTO);
+
+    void deleteTruckName(Long id);
 
 }

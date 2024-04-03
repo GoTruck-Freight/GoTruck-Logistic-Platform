@@ -4,19 +4,20 @@ import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
+import java.util.UUID;
 
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Entity
-@Table(name = "truck-categories")
+@DynamicUpdate
+@Table(name = "truck_categories")
 public class TruckCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +44,7 @@ public class TruckCategory {
     @Positive(message = "Cargo cubic volume must be positive")
     private double cargoCubicVolume;
 
-    private String truckNameId;
-    private TruckNameDTO truckName;
+    private Long truckNameId;
 }
+
+

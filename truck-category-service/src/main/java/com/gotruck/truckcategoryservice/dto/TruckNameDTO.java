@@ -1,36 +1,21 @@
 package com.gotruck.truckcategoryservice.dto;
 
-import jakarta.persistence.*;
+import com.gotruck.truckcategoryservice.model.TruckCategory;
+import com.gotruck.truckcategoryservice.model.TruckName;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 @Setter
 @Getter
-@Entity
-@Table(name = "truck_names")
+@AllArgsConstructor
+@NoArgsConstructor
+@Component
 public class TruckNameDTO {
 
-    // Getters and setters
-    @Id
-    @Column(columnDefinition = "uuid")
-    private UUID id;
+    private Long id;
     private String name;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

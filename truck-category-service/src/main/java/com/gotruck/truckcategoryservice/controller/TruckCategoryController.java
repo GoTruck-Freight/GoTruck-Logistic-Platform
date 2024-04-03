@@ -21,7 +21,7 @@ public class TruckCategoryController {
         this.truckCategoryService = truckCategoryService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<TruckCategoryDTO> getTruckCategoryById(@PathVariable Long id) {
         try {
             TruckCategoryDTO truckCategoryDTO = truckCategoryService.getTruckCategoryById(id);
@@ -31,7 +31,7 @@ public class TruckCategoryController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<TruckCategoryDTO> addNewTruckCategory(@RequestBody TruckCategoryDTO truckCategoryDTO) {
         try {
             TruckCategoryDTO savedTruckCategoryDTO = truckCategoryService.addNewTruckCategory(truckCategoryDTO);
@@ -41,7 +41,7 @@ public class TruckCategoryController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<TruckCategoryDTO> updateTruckCategory(
             @PathVariable Long id, @RequestBody TruckCategoryDTO truckCategoryDTO) {
         try {
@@ -58,7 +58,7 @@ public class TruckCategoryController {
         return new ResponseEntity<>(truckCategories, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTruckCategory(@PathVariable Long id) {
         truckCategoryService.deleteTruckCategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
