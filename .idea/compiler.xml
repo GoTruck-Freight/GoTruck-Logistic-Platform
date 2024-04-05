@@ -12,10 +12,12 @@
         <module name="shipper-service" />
         <module name="service-registry" />
         <module name="tracking-service" />
+        <module name="truck-category-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="admin-server" target="17" />
+      <module name="truck-category" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -26,6 +28,8 @@
       <module name="service-registry" options="-parameters" />
       <module name="shipper-service" options="-parameters" />
       <module name="tracking-service" options="-parameters" />
+      <module name="truck-category" options="-parameters" />
+      <module name="truck-category-service" options="-parameters" />
     </option>
   </component>
 </project>

@@ -18,22 +18,22 @@ public class TruckNameController {
         this.truckNameService = truckNameService;
     }
 
-    @GetMapping
+    @GetMapping("/getAll")
     public List<String> getAllTruckNames(){
         return truckNameService.getAllTruckNames();
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public TruckNameDTO addNewTruckName(@RequestBody TruckNameDTO truckNameDTO) {
         return truckNameService.addNewTruckName(truckNameDTO);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public TruckNameDTO updateTruckName(@PathVariable Long id, @RequestBody TruckNameDTO truckNameDTO) {
         return truckNameService.updateTruckName(id, truckNameDTO);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteTruckName(@PathVariable Long id) {
         truckNameService.deleteTruckName(id);
     }

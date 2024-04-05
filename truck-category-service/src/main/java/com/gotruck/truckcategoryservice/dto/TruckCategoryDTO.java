@@ -16,12 +16,23 @@ public class TruckCategoryDTO {
 
     private Long truckNameId;
 
-    public TruckCategoryDTO() {
-    }
-
     public TruckCategoryDTO(Long id, String description, double maxLoadCapacity,
                             double cargoAreaWidth, double cargoAreaLength,
-                            double cargoAreaHeight, double cargoCubicVolume,
-                            Long truckNameId) {
+                            double cargoAreaHeight, double cargoCubicVolume, Long
+                            truckNameId) {
+        this.id = id;
+        this.description = description;
+        this.maxLoadCapacity = maxLoadCapacity;
+        this.cargoAreaWidth = cargoAreaWidth;
+        this.cargoAreaLength = cargoAreaLength;
+        this.cargoAreaHeight = cargoAreaHeight;
+        this.cargoCubicVolume = cargoCubicVolume;
+        this.truckNameId = truckNameId;
+
     }
+
+    public TruckCategoryDTO() {
+
+    }
+
 }

@@ -36,11 +36,11 @@ services:
     # Prometheus
   prometheus:
       container_name: prometheus
-      image: prom/prometheus:v2.40.0
+      image: prom/prometheus:latest
       ports:
         - "9090:9090"
       volumes:
-        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yaml
+        - ./monitoring/prometheus/config/prometheus.yml:/etc/monitoring/prometheus/config/prometheus.yml
       networks:
         - my_network
 

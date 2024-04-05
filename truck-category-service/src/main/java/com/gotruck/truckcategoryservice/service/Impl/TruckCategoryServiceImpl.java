@@ -1,6 +1,7 @@
 package com.gotruck.truckcategoryservice.service.Impl;
 
 import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
+import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
 import com.gotruck.truckcategoryservice.exceptions.TruckCategoryNotFoundException;
 import com.gotruck.truckcategoryservice.exceptions.TruckNameNotFoundException;
 import com.gotruck.truckcategoryservice.model.TruckCategory;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class TruckCategoryServiceImpl implements TruckCategoryService {
     private final TruckCategoryRepository truckCategoryRepository;
     private final TruckNameRepository truckNameRepository;
+
 
     @Autowired
     public TruckCategoryServiceImpl(TruckCategoryRepository truckCategoryRepository, TruckNameRepository truckNameRepository) {
@@ -67,7 +69,6 @@ public class TruckCategoryServiceImpl implements TruckCategoryService {
 
     @Override
     public TruckCategoryDTO addNewTruckCategory(TruckCategoryDTO truckCategoryDTO) {
-        // Gelen truckNameId ile ilgili TruckName'i bul
         Optional<TruckName> truckNameOptional = truckNameRepository.findById(truckCategoryDTO.getTruckNameId());
         if (truckNameOptional.isPresent()) {
             TruckCategory newTruckCategory = new TruckCategory();
@@ -78,14 +79,12 @@ public class TruckCategoryServiceImpl implements TruckCategoryService {
             newTruckCategory.setCargoAreaHeight(truckCategoryDTO.getCargoAreaHeight());
             newTruckCategory.setCargoCubicVolume(truckCategoryDTO.getCargoCubicVolume());
 
-            // TruckName'den gelen ID'yi TruckCategory'ye ata
-            newTruckCategory.setTruckNameId(truckCategoryDTO.getTruckNameId());
+            TruckName truckNameDTO = truckNameOptional.get();
+            newTruckCategory.setTruckNameId(truckNameDTO.getId());
 
-            // Yeni TruckCategory'yi veritabanına kaydet
             TruckCategory savedTruckCategory = truckCategoryRepository.save(newTruckCategory);
             return getTruckCategoryDTO(savedTruckCategory);
         } else {
-            // TruckName bulunamadı hatası fırlat
             throw new TruckNameNotFoundException("Truck name not found with id: " + truckCategoryDTO.getTruckNameId());
         }
     }

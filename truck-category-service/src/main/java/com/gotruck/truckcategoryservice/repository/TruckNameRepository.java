@@ -12,9 +12,6 @@ import java.util.Optional;
 @Repository
 public interface TruckNameRepository extends JpaRepository<TruckName, Long> {
 
-    // Save a new TruckName object
-    TruckName save(TruckName truckName);
-
     // Find a TruckName object by its ID
     Optional<TruckName> findById(Long id);
 

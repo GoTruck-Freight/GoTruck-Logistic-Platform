@@ -21,41 +21,29 @@ public class TruckCategoryController {
         this.truckCategoryService = truckCategoryService;
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/getById/{id}")
     public ResponseEntity<TruckCategoryDTO> getTruckCategoryById(@PathVariable Long id) {
-        try {
             TruckCategoryDTO truckCategoryDTO = truckCategoryService.getTruckCategoryById(id);
             return ResponseEntity.ok(truckCategoryDTO);
-        } catch (TruckCategoryNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
+
+//    @GetMapping("/getAll")
+//    public ResponseEntity<List<TruckCategoryDTO>> getAllTruckCategories() {
+//        List<TruckCategoryDTO> truckCategories = truckCategoryService.getAllTruckCategories();
+//        return new ResponseEntity<>(truckCategories, HttpStatus.OK);
+//    }
 
     @PostMapping("/add")
     public ResponseEntity<TruckCategoryDTO> addNewTruckCategory(@RequestBody TruckCategoryDTO truckCategoryDTO) {
-        try {
-            TruckCategoryDTO savedTruckCategoryDTO = truckCategoryService.addNewTruckCategory(truckCategoryDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedTruckCategoryDTO);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        TruckCategoryDTO savedTruckCategoryDTO = truckCategoryService.addNewTruckCategory(truckCategoryDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTruckCategoryDTO);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<TruckCategoryDTO> updateTruckCategory(
             @PathVariable Long id, @RequestBody TruckCategoryDTO truckCategoryDTO) {
-        try {
-            TruckCategoryDTO updatedTruckCategoryDTO = truckCategoryService.updateTruckCategory(id, truckCategoryDTO);
-            return ResponseEntity.ok(updatedTruckCategoryDTO);
-        } catch (TruckCategoryNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<TruckCategoryDTO>> getAllTruckCategories() {
-        List<TruckCategoryDTO> truckCategories = truckCategoryService.getAllTruckCategories();
-        return new ResponseEntity<>(truckCategories, HttpStatus.OK);
+        TruckCategoryDTO updatedTruckCategoryDTO = truckCategoryService.updateTruckCategory(id, truckCategoryDTO);
+        return ResponseEntity.ok(updatedTruckCategoryDTO);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -63,7 +51,5 @@ public class TruckCategoryController {
         truckCategoryService.deleteTruckCategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
 }
 

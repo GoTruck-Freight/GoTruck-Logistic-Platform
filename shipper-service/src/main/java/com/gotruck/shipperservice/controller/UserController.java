@@ -1,14 +1,9 @@
 package com.gotruck.shipperservice.controller;
 
-
 import com.gotruck.shipperservice.dto.UserProfile;
 import com.gotruck.shipperservice.model.User;
 import com.gotruck.shipperservice.repository.UserRepository;
-import com.gotruck.shipperservice.service.AuthService;
 import com.gotruck.shipperservice.service.UserService;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,7 +19,6 @@ import java.util.Optional;
 @RequestMapping("api/v1/shipper-user")
 
 public class UserController {
-
     private final UserService userService;
     private final UserRepository userRepository;
 

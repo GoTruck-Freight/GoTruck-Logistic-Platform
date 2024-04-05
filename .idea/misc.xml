@@ -3,6 +3,7 @@
   <component name="EntryPointsManager">
     <writeAnnotations>
       <writeAnnotation name="org.springframework.beans.factory.annotation.Value" />
+      <writeAnnotation name="org.springframework.beans.factory.annotation.Autowired" />
     </writeAnnotations>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
@@ -17,6 +18,8 @@
         <option value="$PROJECT_DIR$/shipper-service/pom.xml" />
         <option value="$PROJECT_DIR$/../admin-server/admin-server/pom.xml" />
         <option value="$PROJECT_DIR$/admin-server/pom.xml" />
+        <option value="$PROJECT_DIR$/../truck-category-service/truck-category-service/pom.xml" />
+        <option value="$PROJECT_DIR$/truck-category-service/pom.xml" />
       </list>
     </option>
   </component>
