@@ -1,6 +1,8 @@
 package com.gotruck.truckcategoryservice.service.Impl;
 
 import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
+import com.gotruck.truckcategoryservice.exceptions.TruckNameNotFoundException;
+import com.gotruck.truckcategoryservice.mapper.TruckNameMapper;
 import com.gotruck.truckcategoryservice.model.TruckName;
 import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
 import com.gotruck.truckcategoryservice.service.TruckNameService;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -15,15 +18,13 @@ import java.util.stream.Collectors;
 public class TruckNameServiceImpl implements TruckNameService {
 
     private final TruckNameRepository truckNameRepository;
-    @Autowired
-    public TruckNameDTO truckNameDTO;
+    private final TruckNameMapper truckNameMapper;
 
     @Autowired
-    public TruckNameServiceImpl(TruckNameRepository truckNameRepository, TruckNameDTO truckNameDTO) {
+    public TruckNameServiceImpl(TruckNameRepository truckNameRepository, TruckNameMapper truckNameMapper) {
         this.truckNameRepository = truckNameRepository;
-        this.truckNameDTO = truckNameDTO;
+        this.truckNameMapper = truckNameMapper;
     }
-
 
     @Override
     public List<String> getAllTruckNames() {
@@ -31,46 +32,49 @@ public class TruckNameServiceImpl implements TruckNameService {
         return truckNames.stream()
                 .map(TruckName::getName)
                 .collect(Collectors.toList());
-
-//        return truckNames.stream()
-//                .map(truckName -> {
-//                    TruckNameDTO dto = new TruckNameDTO();
-//                    dto.setId(truckName.getId());
-//                    dto.setName(truckName.getName());
-//                    return dto;
-//                })
-//                .collect(Collectors.toList());
     }
 
     @Override
     public TruckNameDTO findTruckNameById(Long id) {
-        TruckName truckName = truckNameRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Truck Name not found"));
-        return new TruckNameDTO(truckName.getId(), truckName.getName());
+        Optional<TruckName> truckNameOptional = truckNameRepository.findById(id);
+        if (truckNameOptional.isPresent()){
+            TruckName truckName = truckNameOptional.get();
+            return truckNameMapper.truckNameToDto(truckName);
+        }
+        else {
+            throw new TruckNameNotFoundException("Truck name not found with id: " + id);
+        }
     }
 
     @Override
     public TruckNameDTO addNewTruckName(TruckNameDTO truckNameDTO) {
-        TruckName truckName = new TruckName();
-        truckName.setId(truckNameDTO.getId()); // Assuming ID is generated automatically
-        truckName.setName(truckNameDTO.getName());
+        if (truckNameDTO.getId() != null) {
+            throw new IllegalArgumentException("New truck name should not have an ID.");
+        }
+
+        TruckName truckName = truckNameMapper.dtoToTruckName(truckNameDTO);
         TruckName savedTruckName = truckNameRepository.save(truckName);
-        return new TruckNameDTO(savedTruckName.getId(), savedTruckName.getName());
+        return truckNameMapper.truckNameToDto(savedTruckName);
     }
 
     @Override
     public TruckNameDTO updateTruckName(Long id, TruckNameDTO truckNameDTO) {
         TruckName existingTruckName = truckNameRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Truck Name not found"));
-        existingTruckName.setName(truckNameDTO.getName());
-        TruckName updatedTruckName = truckNameRepository.save(existingTruckName);
-        return new TruckNameDTO(updatedTruckName.getId(), updatedTruckName.getName());
-    }
+                .orElseThrow(() -> new TruckNameNotFoundException("Truck name not found with id: " + id));
 
+        truckNameMapper.updateTruckNameFromDTO(truckNameDTO, existingTruckName);
+
+        TruckName updatedTruckName = truckNameRepository.save(existingTruckName);
+        return truckNameMapper.truckNameToDto(updatedTruckName);
+    }
 
     @Override
     public void deleteTruckName(Long id) {
-        truckNameRepository.deleteById(id);
+        if(truckNameRepository.existsById(id)){
+            truckNameRepository.deleteById(id);
+        }
+          else {
+              throw new TruckNameNotFoundException("Truck name not found with id: " + id);
+        }
     }
-
 }

@@ -2,14 +2,8 @@ package com.gotruck.truckcategoryservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-
-import java.sql.Types;
-import java.util.UUID;
 
 
-@Setter
-@Getter
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

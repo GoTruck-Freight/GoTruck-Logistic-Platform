@@ -1,7 +1,5 @@
 package com.gotruck.truckcategoryservice.dto;
 
-import com.gotruck.truckcategoryservice.model.TruckCategory;
-import com.gotruck.truckcategoryservice.model.TruckName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

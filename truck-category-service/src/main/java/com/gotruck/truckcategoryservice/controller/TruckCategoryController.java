@@ -1,18 +1,17 @@
 package com.gotruck.truckcategoryservice.controller;
 
 import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
-import com.gotruck.truckcategoryservice.exceptions.TruckCategoryNotFoundException;
 import com.gotruck.truckcategoryservice.service.TruckCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.*;
+
 
 @RestController
-@RequestMapping("api/v1/truck-category")
+@RequestMapping("api/v1/truck-categories")
 public class TruckCategoryController {
     private final TruckCategoryService truckCategoryService;
 
@@ -21,35 +20,32 @@ public class TruckCategoryController {
         this.truckCategoryService = truckCategoryService;
     }
 
-    @GetMapping("/getById/{id}")
-    public ResponseEntity<TruckCategoryDTO> getTruckCategoryById(@PathVariable Long id) {
-            TruckCategoryDTO truckCategoryDTO = truckCategoryService.getTruckCategoryById(id);
-            return ResponseEntity.ok(truckCategoryDTO);
+    @GetMapping("/{id}")
+    public TruckCategoryDTO getTruckCategoryById(@PathVariable Long id) {
+            return truckCategoryService.getTruckCategoryById(id);
     }
 
-//    @GetMapping("/getAll")
-//    public ResponseEntity<List<TruckCategoryDTO>> getAllTruckCategories() {
-//        List<TruckCategoryDTO> truckCategories = truckCategoryService.getAllTruckCategories();
-//        return new ResponseEntity<>(truckCategories, HttpStatus.OK);
-//    }
-
-    @PostMapping("/add")
-    public ResponseEntity<TruckCategoryDTO> addNewTruckCategory(@RequestBody TruckCategoryDTO truckCategoryDTO) {
-        TruckCategoryDTO savedTruckCategoryDTO = truckCategoryService.addNewTruckCategory(truckCategoryDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedTruckCategoryDTO);
+    @GetMapping()
+    public List<TruckCategoryDTO> getAllTruckCategories() {
+        return truckCategoryService.getAllTruckCategories();
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<TruckCategoryDTO> updateTruckCategory(
+    @PostMapping()
+    @ResponseStatus(CREATED)
+    public TruckCategoryDTO addNewTruckCategory(@RequestBody TruckCategoryDTO truckCategoryDTO) {
+        return truckCategoryService.addNewTruckCategory(truckCategoryDTO);
+    }
+
+    @PutMapping("/{id}")
+    public TruckCategoryDTO updateTruckCategory(
             @PathVariable Long id, @RequestBody TruckCategoryDTO truckCategoryDTO) {
-        TruckCategoryDTO updatedTruckCategoryDTO = truckCategoryService.updateTruckCategory(id, truckCategoryDTO);
-        return ResponseEntity.ok(updatedTruckCategoryDTO);
+            return truckCategoryService.updateTruckCategory(id, truckCategoryDTO);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteTruckCategory(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    @ResponseStatus(NO_CONTENT)
+    public void deleteTruckCategory(@PathVariable Long id) {
         truckCategoryService.deleteTruckCategory(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
 
