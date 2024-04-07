@@ -78,7 +78,6 @@ public class TruckCategoryServiceImpl implements TruckCategoryService {
             TruckCategory truckCategory = truckCategoryOptional.get();
 
             // Update only the fields that are not null in updatedTruckCategoryDTO
-            // Update only the fields that are not null in updatedTruckCategoryDTO
             if (Objects.nonNull(updatedTruckCategoryDTO.getDescription())) {
                 truckCategory.setDescription(updatedTruckCategoryDTO.getDescription());
             }

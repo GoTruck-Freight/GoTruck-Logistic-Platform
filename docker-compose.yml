@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   config-server:
     build:
       context: ./config-server
@@ -30,6 +31,22 @@ services:
       context: ./shipper-service
     ports:
       - "9091:9091"
+    networks:
+      - my_network
+
+  truck-category-service:
+    build:
+      context: ./truck-category-service
+    ports:
+      - "9080:9080"
+    networks:
+      - my_network
+
+  order-service:
+    build:
+      context: ./order-service
+    ports:
+      - "9180:9180"
     networks:
       - my_network
 

@@ -1,17 +1,12 @@
 package com.gotruck.truckcategoryservice.model;
 
-import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.UUID;
 
-
-@Setter
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

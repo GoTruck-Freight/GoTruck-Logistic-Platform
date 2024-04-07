@@ -7,9 +7,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="api-gateway" />
         <module name="config-server" />
         <module name="shipper-service" />
+        <module name="api-gateway" />
+        <module name="order-service" />
         <module name="service-registry" />
         <module name="tracking-service" />
         <module name="truck-category-service" />
@@ -25,6 +26,7 @@
       <module name="admin-server" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="config-server" options="-parameters" />
+      <module name="order-service" options="-parameters" />
       <module name="service-registry" options="-parameters" />
       <module name="shipper-service" options="-parameters" />
       <module name="tracking-service" options="-parameters" />
