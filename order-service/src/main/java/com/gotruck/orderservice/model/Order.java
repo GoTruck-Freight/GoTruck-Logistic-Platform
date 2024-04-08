@@ -1,9 +1,14 @@
 package com.gotruck.orderservice.model;
 
+import com.gotruck.orderservice.model.enums.OrderType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +29,13 @@ public class Order {
     private String deliveryRoute;
     private String pickupLocation;
     private String deliveryLocation;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_type")
+    private OrderType orderType;
+    private LocalDateTime createdAt;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private Date departureDate;
+    private String note;
 
     public Long getId() {
         return id;

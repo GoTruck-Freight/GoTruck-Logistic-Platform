@@ -1,13 +1,21 @@
 package com.gotruck.orderservice.dto;
 
+import com.gotruck.orderservice.model.enums.OrderType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
+    private Long id;
     private Double minPayment;
     private Double maxPayment;
     private Double proposedPayment;
@@ -18,6 +26,20 @@ public class OrderDTO {
     private String deliveryRoute;
     private String pickupLocation;
     private String deliveryLocation;
+    @Enumerated(EnumType.STRING)
+    private OrderType orderType;
+    private LocalDateTime createdAt;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private Date departureDate;
+    private String note;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Double getMinPayment() {
         return minPayment;
@@ -81,5 +103,13 @@ public class OrderDTO {
 
     public void setDeliveryLocation(String deliveryLocation) {
         this.deliveryLocation = deliveryLocation;
+    }
+
+    public OrderType getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(OrderType orderType) {
+        this.orderType = orderType;
     }
 }

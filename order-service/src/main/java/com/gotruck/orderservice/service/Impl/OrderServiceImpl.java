@@ -8,6 +8,7 @@ import com.gotruck.orderservice.repository.OrderRepository;
 import com.gotruck.orderservice.service.OrderService;
 import com.gotruck.truckcategoryservice.model.TruckName;
 import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final TruckNameRepository truckNameRepository;
 
+    @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, TruckNameRepository truckNameRepository) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
@@ -52,16 +54,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO addNewOrder(OrderDTO orderDTO) {
-//        Optional<TruckName> truckNameOptional = orderRepository.findById(orderDTO.getTruckNameId());
-//        if (truckNameOptional.isPresent()) {
-//            Order newOrder = orderMapper.dtoToOrder(orderDTO);
-//            newOrder.setTruckNameId(orderDTO.getTruckNameId());
-//
-//            Order savedOrder = orderRepository.save(newOrder);
-//            return orderMapper.orderToDto(savedOrder);
-//        } else {
-//            throw new OrderNotFoundException("Order not found with id: " + orderDTO.getTruckNameId());
-//        }
         Optional<TruckName> truckNameOptional = truckNameRepository.findById(orderDTO.getTruckNameId());
         if (truckNameOptional.isPresent()) {
             Order newOrder = orderMapper.dtoToOrder(orderDTO);
@@ -79,27 +71,16 @@ public class OrderServiceImpl implements OrderService {
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
 
-            if (Objects.nonNull(updatedOrderDTO.getMaxPayment())) {
-                order.setMaxPayment(updatedOrderDTO.getMaxPayment());
-            }
-            if (Objects.nonNull(updatedOrderDTO.getMinPayment())) {
-                order.setMinPayment(updatedOrderDTO.getMinPayment());
-            }
-            if (Objects.nonNull(updatedOrderDTO.getProposedPayment())) {
-                order.setProposedPayment(updatedOrderDTO.getProposedPayment());
-            }
-            if (Objects.nonNull(updatedOrderDTO.getTotalWeight())) {
-                order.setTotalWeight(updatedOrderDTO.getTotalWeight());
-            }
-            if (Objects.nonNull(updatedOrderDTO.getDeliveryRoute())) {
-                order.setDeliveryRoute(updatedOrderDTO.getDeliveryRoute());
-            }
-            if (Objects.nonNull(updatedOrderDTO.getPickupLocation())) {
-                order.setPickupLocation(updatedOrderDTO.getPickupLocation());
-            }
-            if (Objects.nonNull(updatedOrderDTO.getDeliveryLocation())) {
-                order.setDeliveryLocation(updatedOrderDTO.getDeliveryLocation());
-            }
+            order.setMaxPayment(updatedOrderDTO.getMaxPayment());
+            order.setMinPayment(updatedOrderDTO.getMinPayment());
+            order.setProposedPayment(updatedOrderDTO.getProposedPayment());
+            order.setTotalWeight(updatedOrderDTO.getTotalWeight());
+            order.setDeliveryRoute(updatedOrderDTO.getDeliveryRoute());
+            order.setPickupLocation(updatedOrderDTO.getPickupLocation());
+            order.setDeliveryLocation(updatedOrderDTO.getDeliveryLocation());
+            order.setOrderType(updatedOrderDTO.getOrderType());
+            order.setDepartureDate(updatedOrderDTO.getDepartureDate());
+            order.setNote(updatedOrderDTO.getNote());
 
             Order updatedOrder = orderRepository.save(order);
             return orderMapper.orderToDto(updatedOrder);
