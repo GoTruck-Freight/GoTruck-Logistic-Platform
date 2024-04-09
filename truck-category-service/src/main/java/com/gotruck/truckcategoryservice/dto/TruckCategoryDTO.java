@@ -17,4 +17,5 @@ public class TruckCategoryDTO {
     private double cargoCubicVolume;
 
     private Long truckNameId;
+
 }

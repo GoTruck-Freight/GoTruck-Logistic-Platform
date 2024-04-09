@@ -11,8 +11,8 @@ import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -79,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
             order.setPickupLocation(updatedOrderDTO.getPickupLocation());
             order.setDeliveryLocation(updatedOrderDTO.getDeliveryLocation());
             order.setOrderType(updatedOrderDTO.getOrderType());
-            order.setDepartureDate(updatedOrderDTO.getDepartureDate());
+            order.setPickupDate(updatedOrderDTO.getPickupDate());
             order.setNote(updatedOrderDTO.getNote());
 
             Order updatedOrder = orderRepository.save(order);

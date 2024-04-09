@@ -34,7 +34,7 @@ public class Order {
     private OrderType orderType;
     private LocalDateTime createdAt;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date departureDate;
+    private Date pickupDate;
     private String note;
 
     public Long getId() {

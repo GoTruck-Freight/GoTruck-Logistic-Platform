@@ -66,6 +66,7 @@ public class OrderControllerUnitTests {
     @Test
     public void testAddNewOrder() throws Exception {
         OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setId(1L);
 
         when(orderService.addNewOrder(any(OrderDTO.class))).thenReturn(orderDTO);
 

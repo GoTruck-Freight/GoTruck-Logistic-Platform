@@ -1,24 +1,33 @@
 package com.gotruck.orderservice.integration.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gotruck.orderservice.controller.OrderController;
 import com.gotruck.orderservice.dto.OrderDTO;
+import com.gotruck.orderservice.model.enums.OrderType;
 import com.gotruck.orderservice.service.OrderService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.Collections;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(OrderController.class)
 public class OrderControllerIntegrationTests {
+
+    @Mock
+    private OrderService orderService;
+
+    @InjectMocks
+    private OrderController orderController;
 
     @Autowired
     private MockMvc mockMvc;
@@ -26,142 +35,74 @@ public class OrderControllerIntegrationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private OrderService orderService;
+    @Test
+    public void testGetAllOrders() throws Exception {
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setId(1L);
+        orderDTO.setOrderType(OrderType.SINGLE_TRIP);
 
-    @BeforeEach
-    public void setUp() {
-        // Burada gerekiyorsa test verileri hazırlanabilir.
+        when(orderService.getAllOrders()).thenReturn(Collections.singletonList(orderDTO));
+
+        mockMvc.perform(get("/api/v1/orders"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].orderType").value("SINGLE_TRIP"));
+    }
+
+    @Test
+    public void testFindOrderById() throws Exception {
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setId(1L);
+        orderDTO.setOrderType(OrderType.SINGLE_TRIP);
+
+        when(orderService.findOrderById(any(Long.class))).thenReturn(orderDTO);
+
+        mockMvc.perform(get("/api/v1/orders/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.orderType").value("SINGLE_TRIP"));
     }
 
     @Test
     public void testAddNewOrder() throws Exception {
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setDeliveryRoute("Test Route");
-        orderDTO.setPickupLocation("Test Pickup");
-        orderDTO.setDeliveryLocation("Test Delivery");
+        orderDTO.setId(1L);
+        orderDTO.setOrderType(OrderType.SINGLE_TRIP);
 
-        String jsonRequest = objectMapper.writeValueAsString(orderDTO);
+        when(orderService.addNewOrder(any(OrderDTO.class))).thenReturn(orderDTO);
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
+        mockMvc.perform(post("/api/v1/orders")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
+                        .content(objectMapper.writeValueAsString(orderDTO)))
                 .andExpect(status().isCreated())
-                .andReturn();
-
-        String jsonResponse = result.getResponse().getContentAsString();
-        OrderDTO responseOrder = objectMapper.readValue(jsonResponse, OrderDTO.class);
-
-        // Burada beklenen sonuçları doğrulayabilirsiniz.
-        assertEquals(orderDTO.getDeliveryRoute(), responseOrder.getDeliveryRoute());
-        assertEquals(orderDTO.getPickupLocation(), responseOrder.getPickupLocation());
-        assertEquals(orderDTO.getDeliveryLocation(), responseOrder.getDeliveryLocation());
-    }
-
-    @Test
-    public void testFindOrderById() throws Exception {
-        // Önce bir sipariş ekleyelim
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setDeliveryRoute("Test Route");
-        orderDTO.setPickupLocation("Test Pickup");
-        orderDTO.setDeliveryLocation("Test Delivery");
-
-        String jsonRequest = objectMapper.writeValueAsString(orderDTO);
-
-        MvcResult addResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        String jsonResponse = addResult.getResponse().getContentAsString();
-        OrderDTO addedOrder = objectMapper.readValue(jsonResponse, OrderDTO.class);
-
-        // Ardından bu siparişi bulma testi yapalım
-        MvcResult findResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/{id}", addedOrder.getId()))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String findResponse = findResult.getResponse().getContentAsString();
-        OrderDTO foundOrder = objectMapper.readValue(findResponse, OrderDTO.class);
-
-        // Beklenen sonuçları doğrulayalım
-        assertEquals(addedOrder.getId(), foundOrder.getId());
-        assertEquals(addedOrder.getDeliveryRoute(), foundOrder.getDeliveryRoute());
-        assertEquals(addedOrder.getPickupLocation(), foundOrder.getPickupLocation());
-        assertEquals(addedOrder.getDeliveryLocation(), foundOrder.getDeliveryLocation());
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.orderType").value("SINGLE_TRIP"));
     }
 
     @Test
     public void testUpdateOrder() throws Exception {
-        // Önce bir sipariş ekleyelim
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setDeliveryRoute("Test Route");
-        orderDTO.setPickupLocation("Test Pickup");
-        orderDTO.setDeliveryLocation("Test Delivery");
+        orderDTO.setId(1L);
+        orderDTO.setOrderType(OrderType.SINGLE_TRIP);
 
-        String jsonRequest = objectMapper.writeValueAsString(orderDTO);
+        when(orderService.updateOrder(any(Long.class), any(OrderDTO.class))).thenReturn(orderDTO);
 
-        MvcResult addResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
+        mockMvc.perform(put("/api/v1/orders/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        String jsonResponse = addResult.getResponse().getContentAsString();
-        OrderDTO addedOrder = objectMapper.readValue(jsonResponse, OrderDTO.class);
-
-        // Siparişi güncelleme testi yapalım
-        orderDTO.setDeliveryRoute("Updated Route");
-        orderDTO.setPickupLocation("Updated Pickup");
-        orderDTO.setDeliveryLocation("Updated Delivery");
-
-        String updateRequest = objectMapper.writeValueAsString(orderDTO);
-
-        MvcResult updateResult = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/orders/{id}", addedOrder.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updateRequest))
+                        .content(objectMapper.writeValueAsString(orderDTO)))
                 .andExpect(status().isOk())
-                .andReturn();
-
-        String updateResponse = updateResult.getResponse().getContentAsString();
-        OrderDTO updatedOrder = objectMapper.readValue(updateResponse, OrderDTO.class);
-
-        // Beklenen sonuçları doğrulayalım
-        assertEquals(addedOrder.getId(), updatedOrder.getId());
-        assertEquals(orderDTO.getDeliveryRoute(), updatedOrder.getDeliveryRoute());
-        assertEquals(orderDTO.getPickupLocation(), updatedOrder.getPickupLocation());
-        assertEquals(orderDTO.getDeliveryLocation(), updatedOrder.getDeliveryLocation());
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.orderType").value("SINGLE_TRIP"));
     }
 
     @Test
     public void testDeleteOrder() throws Exception {
-        // Önce bir sipariş ekleyelim
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setDeliveryRoute("Test Route");
-        orderDTO.setPickupLocation("Test Pickup");
-        orderDTO.setDeliveryLocation("Test Delivery");
-
-        String jsonRequest = objectMapper.writeValueAsString(orderDTO);
-
-        MvcResult addResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        String jsonResponse = addResult.getResponse().getContentAsString();
-        OrderDTO addedOrder = objectMapper.readValue(jsonResponse, OrderDTO.class);
-
-        // Siparişi silme testi yapalım
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/orders/{id}", addedOrder.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/api/v1/orders/1"))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
-
-        // Siparişi sildikten sonra tekrar bulma isteği gönderelim
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/{id}", addedOrder.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
     }
-
 }

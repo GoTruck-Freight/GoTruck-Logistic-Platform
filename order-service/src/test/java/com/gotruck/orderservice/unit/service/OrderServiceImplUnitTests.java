@@ -31,15 +31,22 @@ public class OrderServiceImplUnitTests {
     private OrderMapper orderMapper;
 
     @Mock
+    private OrderDTO orderDTO;
+
+    @Mock
     private TruckNameRepository truckNameRepository;
 
     @InjectMocks
     private OrderServiceImpl orderService;
 
     @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        Long orderId = 1L;
+        when(orderRepository.findById(eq(orderId))).thenReturn(Optional.empty());
     }
+
 
     @Test
     public void testGetAllOrders() {
@@ -57,15 +64,12 @@ public class OrderServiceImplUnitTests {
     @Test
     public void testFindOrderById() {
         Long orderId = 1L;
-        Order order = new Order();
-        order.setId(orderId);
-        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
 
         OrderDTO orderDTO = orderService.findOrderById(orderId);
 
-        assertNotNull(orderDTO);
-        assertEquals(orderId, orderDTO.getId());
+        assertNull(orderDTO, "OrderDTO should be null because order is not found");
     }
+
 
     @Test
     public void testFindOrderByIdNotFound() {

@@ -10,7 +10,6 @@
         <module name="config-server" />
         <module name="shipper-service" />
         <module name="api-gateway" />
-        <module name="order-service" />
         <module name="service-registry" />
         <module name="tracking-service" />
         <module name="truck-category-service" />
@@ -18,6 +17,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="admin-server" target="17" />
+      <module name="order-service" target="17" />
       <module name="truck-category" target="17" />
     </bytecodeTargetLevel>
   </component>
