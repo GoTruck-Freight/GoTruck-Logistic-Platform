@@ -1,6 +1,5 @@
 package com.gotruck.shipperservice.service;
 
-import com.gotruck.shipperservice.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 

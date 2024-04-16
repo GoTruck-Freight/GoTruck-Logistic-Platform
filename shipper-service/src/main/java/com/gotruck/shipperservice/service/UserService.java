@@ -12,9 +12,9 @@ public interface  UserService {
 
     Object getUserById(Long id);
 
-    ResponseEntity<?> updateProfile(com.gotruck.shipperservice.dto.UserProfile userProfile, Authentication authentication);
+    ResponseEntity<?> updateProfile(UserProfile userProfile, Authentication authentication);
 
-    ResponseEntity<String> deleteUserByEmail(String email);
+    void deleteUserByEmail(String email);
 
 }
 

@@ -3,6 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/GoTruck-Main.iml" filepath="$PROJECT_DIR$/.idea/GoTruck-Main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config-server/config-server.iml" filepath="$PROJECT_DIR$/config-server/config-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/order-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/order-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipper-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/shipper-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/truck-category-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/truck-category-service.main.iml" />
     </modules>
   </component>
 </project>

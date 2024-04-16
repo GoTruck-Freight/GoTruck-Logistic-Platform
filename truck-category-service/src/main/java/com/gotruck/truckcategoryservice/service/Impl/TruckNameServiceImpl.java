@@ -52,6 +52,10 @@ public class TruckNameServiceImpl implements TruckNameService {
             throw new IllegalArgumentException("New truck name should not have an ID.");
         }
 
+        if (truckNameDTO.getName() == null || truckNameDTO.getName().isEmpty()) {
+            throw new IllegalArgumentException("Truck name cannot be null or empty.");
+        }
+
         TruckName truckName = truckNameMapper.dtoToTruckName(truckNameDTO);
         TruckName savedTruckName = truckNameRepository.save(truckName);
         return truckNameMapper.truckNameToDto(savedTruckName);

@@ -7,7 +7,6 @@ import com.gotruck.shipperservice.service.ImageService;
 import com.gotruck.shipperservice.service.UserService;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,8 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-
 
 import java.util.Collections;
 import java.util.Optional;
@@ -122,17 +119,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public ResponseEntity<String> deleteUserByEmail(String email) {
+    public void deleteUserByEmail(String email) {
         // Find the user with the given email
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             // Delete the user from the database
             userRepository.delete(userOptional.get());
             // Return a success response message
-            return ResponseEntity.ok().body("User has been deleted successfully");
+            ResponseEntity.ok().body("User has been deleted successfully");
         } else {
             // If user not found, return an appropriate error message
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with email " + email + " not found");
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with email " + email + " not found");
         }
     }
 }

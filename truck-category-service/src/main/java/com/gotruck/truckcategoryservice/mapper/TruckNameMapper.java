@@ -1,8 +1,6 @@
 package com.gotruck.truckcategoryservice.mapper;
 
-import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
 import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
-import com.gotruck.truckcategoryservice.model.TruckCategory;
 import com.gotruck.truckcategoryservice.model.TruckName;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 public interface TruckNameMapper {
     TruckNameMapper INSTANCE = Mappers.getMapper(TruckNameMapper.class);
 
-    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "id", ignore = true)
     TruckName dtoToTruckName(TruckNameDTO dto);
 
     TruckNameDTO truckNameToDto(TruckName entity);

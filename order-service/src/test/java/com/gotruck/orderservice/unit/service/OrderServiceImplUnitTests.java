@@ -5,10 +5,9 @@ import com.gotruck.orderservice.exceptions.OrderNotFoundException;
 import com.gotruck.orderservice.mapper.OrderMapper;
 import com.gotruck.orderservice.model.Order;
 import com.gotruck.orderservice.repository.OrderRepository;
-import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
-
 import com.gotruck.orderservice.service.Impl.OrderServiceImpl;
 import com.gotruck.truckcategoryservice.model.TruckName;
+import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

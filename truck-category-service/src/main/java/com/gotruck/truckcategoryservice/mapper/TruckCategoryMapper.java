@@ -12,11 +12,11 @@ import org.mapstruct.factory.Mappers;
 public interface TruckCategoryMapper {
     TruckCategoryMapper INSTANCE = Mappers.getMapper(TruckCategoryMapper.class);
 
-    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "id", ignore = true)
     TruckCategory dtoToTruckCategory(TruckCategoryDTO dto);
 
     TruckCategoryDTO truckCategoryToDto(TruckCategory entity);
 
-    void updateTruckCategoryFromDTO(TruckCategoryDTO truckCategoryDTO, @MappingTarget TruckCategory truckCategory);
+
 }
 

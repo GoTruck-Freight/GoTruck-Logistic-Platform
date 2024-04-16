@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-//@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("api/v1/shipper-user")
 
@@ -31,18 +30,13 @@ public class UserController {
     @GetMapping("/getUserProfile")
     public ResponseEntity getUserProfile(Principal principal){
         if (principal == null) {
-            // Eğer kullanıcı kimliği alınamazsa, yetkisiz erişim hatası döndür
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        String email = principal.getName(); // Kullanıcının e-posta adresini al
-
-        // Kullanıcının e-posta adresiyle profil bilgilerini al ve döndür
+        String email = principal.getName(); // Userin e-posta adresini al
         UserProfile userProfile = (UserProfile) userService.getUserProfile(email);
         if (userProfile != null) {
             return ResponseEntity.ok(userProfile);
         } else {
-            // Profil bulunamazsa 404 Not Found hatası döndür
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -80,7 +74,7 @@ public class UserController {
         if (authentication != null && authentication.isAuthenticated()) {
             String userEmail = authentication.getName();
             userService.deleteUserByEmail(userEmail);
-            return ResponseEntity.ok("Hesabınız başarıyla silindi.");
+            return ResponseEntity.ok("Hesabınız uğurla silindi.");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Yetkisiz erişim.");
         }

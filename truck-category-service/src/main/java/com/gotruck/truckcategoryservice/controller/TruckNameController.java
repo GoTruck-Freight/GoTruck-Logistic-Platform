@@ -3,7 +3,6 @@ package com.gotruck.truckcategoryservice.controller;
 import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
 import com.gotruck.truckcategoryservice.service.TruckNameService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

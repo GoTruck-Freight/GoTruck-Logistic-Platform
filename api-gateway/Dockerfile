@@ -1,27 +1,17 @@
-# Base image
-FROM openjdk:17
+# Use OpenJDK 17 as the base image
+FROM openjdk:17-jdk-alpine
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the Maven wrapper scripts and the project files into the container
-COPY .mvn/ .mvn/
-COPY mvnw ./
-COPY mvnw.cmd ./
-COPY pom.xml ./
-COPY src ./src
+# Copy the application JAR file into the container at /app
+COPY build/libs/api-gateway-0.0.1-SNAPSHOT.jar /app/api-gateway.jar
 
-# Run Maven command to initialize Maven wrapper (if not already initialized)
-RUN ./mvnw -N io.takari:maven:wrapper -Dmaven=3.8.4
+# Copy the env.properties and application.yml files into the container at /app
+COPY src/main/resources/application.yml /app/application.yml
 
-# Download project dependencies using Maven wrapper
-RUN ./mvnw dependency:go-offline
-
-# Build the application using Maven wrapper
-RUN ./mvnw package -DskipTests
-
-# Expose port 8060 to the outside world
+# Expose port 8060
 EXPOSE 8060
 
-# Define the command to run the Spring Boot application using Maven Wrapper
-CMD ["./mvnw", "spring-boot:run", "-Dspring.config.location=file:/app/config/application.yml", "-Dspring.profiles.active=production"]
+# Specify the command to run your application
+CMD ["java", "-jar", "api-gateway.jar"]

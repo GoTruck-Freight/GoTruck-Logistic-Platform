@@ -3,7 +3,6 @@ package com.gotruck.shipperservice.controller;
 import com.gotruck.shipperservice.dto.*;
 import com.gotruck.shipperservice.model.User;
 import com.gotruck.shipperservice.service.AuthService;
-import com.gotruck.shipperservice.service.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,7 +44,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        // Tarayıcıda bulunan JWT token'ini veya cookie'yi sil
+        // Delete the JWT token or cookie stored in the browser
         Cookie cookie = new Cookie("JWT_TOKEN", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");

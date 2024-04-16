@@ -9,7 +9,6 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: ${DB_DRIVER_CLASS}
 
-
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
@@ -26,6 +25,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+#      hibernate:
+#        temp:
+#          use_jdbc_metadata_defaults: false #to disable contextual lob creation when application starts.
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   port: ${SERVER_PORT}
@@ -68,13 +72,9 @@ management:
       prometheus:
         enabled: true
 
-logging:
-  config: classpath:log4j2-spring.xml
+#logging:
+#  config: classpath:log4j2-spring.xml
 
-  boot:
-  admin:
-  client:
-  url: http://localhost:8080
 
 security:
   jwt:

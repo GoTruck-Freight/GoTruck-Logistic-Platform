@@ -8,12 +8,12 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -21,10 +21,11 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JWTServiceImpl implements JwtService {
 
-//    @Value("${security.jwt.secret-key}")
-    private String SECRET_KEY = "3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b";
-//    SecretKey secretKey = Jwts.SIG.HS256.key().build();
-     SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+    private final SecretKey secretKey;
+    @Autowired
+    public JWTServiceImpl(@Value("${security.jwt.secret-key}") String secretKey) {
+        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+    }
 
     @Override
     public String extractUserName(String token) {
@@ -33,7 +34,6 @@ public class JWTServiceImpl implements JwtService {
 
     @Override
     public String generateAccessToken(UserDetails userDetails) {
-        
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("userId", ((User) userDetails).getId())
@@ -55,7 +55,6 @@ public class JWTServiceImpl implements JwtService {
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
                 .signWith(secretKey)
                 .compact();
-
     }
 
     @Override
@@ -67,7 +66,7 @@ public class JWTServiceImpl implements JwtService {
                 .subject(userDetails.getUsername())
                 .claim("userId", ((User) userDetails).getId())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 3))
                 .signWith(secretKey)
                 .compact();
     }
@@ -114,5 +113,4 @@ public class JWTServiceImpl implements JwtService {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
-
 }

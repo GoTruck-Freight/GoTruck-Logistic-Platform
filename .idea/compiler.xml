@@ -7,17 +7,31 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="config-server" />
         <module name="shipper-service" />
-        <module name="api-gateway" />
-        <module name="service-registry" />
         <module name="tracking-service" />
         <module name="truck-category-service" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.5.5.Final/897f6f115930b936287bef552bf5fe28cc64717d/mapstruct-processor-1.5.5.Final.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="order-service.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="admin-server" target="17" />
-      <module name="order-service" target="17" />
+      <module name="com.gotruck.api-gateway.main" target="17" />
+      <module name="com.gotruck.api-gateway.test" target="17" />
+      <module name="com.gotruck.config-server" target="17" />
+      <module name="com.gotruck.config-server.main" target="17" />
+      <module name="com.gotruck.config-server.test" target="17" />
+      <module name="config-server" target="17" />
+      <module name="Downloads.config-server" target="17" />
+      <module name="Downloads.config-server.main" target="17" />
+      <module name="Downloads.config-server.test" target="17" />
+      <module name="service-registry" target="17" />
       <module name="truck-category" target="17" />
     </bytecodeTargetLevel>
   </component>

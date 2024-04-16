@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
-import org.springframework.web.bind.annotation.Mapping;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface OrderMapper {
@@ -18,5 +17,5 @@ public interface OrderMapper {
 
     OrderDTO orderToDto(Order entity);
 
-    void updateOrderFromDTO(OrderDTO orderDTO, @MappingTarget Order order);
+//    void updateOrderFromDTO(OrderDTO orderDTO, @MappingTarget Order order);
 }

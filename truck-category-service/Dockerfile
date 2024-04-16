@@ -1,14 +1,18 @@
-# Base image
+# Use OpenJDK 17 as the base image
 FROM openjdk:17-jdk-alpine
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the packaged Spring Boot application JAR file into the container
-COPY target/truck-category-service.jar /app
+# Copy the application JAR file into the container at /app
+COPY build/libs/truck-category-service-0.0.1-SNAPSHOT.jar /app/truck-category-service.jar
 
-# Expose the port that the Spring Boot application will run on
-EXPOSE 8190
+# Copy the env.properties and application.yml files into the container at /app
+COPY src/main/resources/application.yml /app/application.yml
+COPY src/main/resources/env.properties /app/env.properties
 
-# Specify the command to run the Spring Boot application when the container starts
+# Expose port 9080
+EXPOSE 9080
+
+# Specify the command to run your application
 CMD ["java", "-jar", "truck-category-service.jar"]

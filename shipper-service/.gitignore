@@ -1,19 +1,12 @@
 HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+env.properties
 /src/main/resources/env.properties
-.mvn/
-mvnw
-mvnw.cmd
-
-# Log files
-*.log
-*.class
-*.jar
-*.war
-
+resources/env.properties
 
 ### STS ###
 .apt_generated
@@ -23,12 +16,20 @@ mvnw.cmd
 .settings
 .springBeans
 .sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+
 
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -36,9 +37,6 @@ mvnw.cmd
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/

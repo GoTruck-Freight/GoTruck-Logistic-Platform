@@ -8,11 +8,11 @@ import com.gotruck.shipperservice.service.EmailService;
 import com.gotruck.shipperservice.service.ImageService;
 import com.gotruck.shipperservice.service.JwtService;
 import io.jsonwebtoken.JwtException;
+import org.springframework.http.HttpStatus;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -43,12 +43,10 @@ public class AuthServiceImpl  implements AuthService {
     }
     @Override
     public User register(RegisterRequest registerRequest) {
-        // E-posta adresinin daha önceden kullanılıp kullanılmadığını kontrol et
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("Email address is already in use");
         }
 
-        // Parola gücünü kontrol et
         String password = registerRequest.getPassword();
         if (!isValidPassword(password)) {
             throw new IllegalArgumentException("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit");
@@ -79,7 +77,6 @@ public class AuthServiceImpl  implements AuthService {
         } catch (AuthenticationException e) {
             throw new IllegalArgumentException("Invalid email or password", e);
         }
-
         var user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -109,20 +106,17 @@ public class AuthServiceImpl  implements AuthService {
         try {
             // Extract user ID from the token
             Long userId = jwtService.extractUserId(token);
-
             // Fetch user from the database
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new NotFoundException("User not found"));
-
             // Update the user's password
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-
             // Save the updated user
             userRepository.save(user);
         } catch (JwtException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
         } catch (NotFoundException e) {
-            throw e; // Bu durumda özel olarak ele alınacak bir hata değil, doğrudan fırlatılıyor
+            throw e; // Bu vəziyyətdə özel olaraq ələ alınacaq bir xəta deyil, doğrudan fırlatılıyor
         } catch (Exception e) {
             throw new InternalServerErrorException("An error occurred while resetting the password");
         }
@@ -142,14 +136,13 @@ public class AuthServiceImpl  implements AuthService {
                 JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
                 jwtAuthResponse.setAccessToken(newAccessToken);
                 jwtAuthResponse.setRefreshToken(newRefreshToken);
-
                 return jwtAuthResponse;
             } else {
                 throw new IllegalArgumentException("Invalid refresh token");
             }
         } catch (Exception e) {
             // Handle any exceptions and return an appropriate response
-            return new JwtAuthResponse(); // Or handle specific error cases
+            return new JwtAuthResponse();
         }
     }
 }

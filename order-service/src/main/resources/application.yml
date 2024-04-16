@@ -11,12 +11,15 @@ spring:
 
   # Hibernate Configuration
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
 
+
 server:
   port: ${SERVER_PORT}
+
 
 eureka:
   client:
@@ -25,26 +28,3 @@ eureka:
       defaultZone: ${EUREKA_DEFAULT_ZONE}
     healthcheck:
       enabled: true
-
-#this is for actuator
-management:
-  tracing:
-    sampling:
-      probability: 1.0
-  endpoint:
-    prometheus:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-    #        include: health, metrics, prometheus
-    health:
-      show-details: always
-  info:
-    env:
-      enabled: true
-  metrics:
-    export:
-      prometheus:
-        enabled: true

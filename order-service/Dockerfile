@@ -1,17 +1,18 @@
-# Base image
-FROM adoptopenjdk:17-jdk-hotspot
+# Use OpenJDK 17 as the base image
+FROM openjdk:17-jdk-alpine
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the executable jar file from the host to the container
-COPY target/order-service.jar /app
+# Copy the application JAR file into the container at /app
+COPY build/libs/order-service-0.0.1-SNAPSHOT.jar /app/order-service.jar
 
-# Copy the env.properties file containing sensitive information
-COPY env.properties /app
+# Copy the env.properties and application.yml files into the container at /app
+COPY src/main/resources/application.yml /app/application.yml
+COPY src/main/resources/env.properties /app/env.properties
 
-# Expose the port the application runs on
-EXPOSE 7070
+# Expose port 4044
+EXPOSE 4044
 
-# Command to run the application
-CMD ["java", "-jar", "order-service.jar", "--spring.config.location=file:/app/env.properties"]
+# Specify the command to run your application
+CMD ["java", "-jar", "order-service.jar"]

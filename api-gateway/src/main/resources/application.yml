@@ -5,7 +5,7 @@ spring:
   application:
     name: api-gateway
   config:
-    import: "optional:configserver:http://loacalhost:8088"
+    import: "optional:configserver:http://localhost:8088"
   cloud:
     gateway:
       routes:
@@ -30,16 +30,17 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
     #      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
-    healthcheck:
-      enabled: true
+#    healthcheck:
+#      enabled: true
 
 #this is for actuator
-management:
-  tracing:
-    sampling:
-      probability: 1.0
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
+#management:
+#  tracing:
+#    sampling:
+#      probability: 1.0
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#
+#

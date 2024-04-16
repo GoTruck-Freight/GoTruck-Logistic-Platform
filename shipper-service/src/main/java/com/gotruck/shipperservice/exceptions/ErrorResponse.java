@@ -1,7 +1,9 @@
 package com.gotruck.shipperservice.exceptions;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public class ErrorResponse {
     private final HttpStatus status;
     private final String message;
@@ -13,15 +15,4 @@ public class ErrorResponse {
         this.details = details;
     }
 
-    public HttpStatus getStatus() {
-        return status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getDetails() {
-        return details;
-    }
 }

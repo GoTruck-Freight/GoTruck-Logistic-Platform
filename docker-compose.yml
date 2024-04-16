@@ -20,7 +20,7 @@ services:
 
   service-registry:
     build:
-      context: ./service-registry
+      context: ./discovery-server
     ports:
       - "8761:8761"
     networks:
@@ -46,7 +46,7 @@ services:
     build:
       context: ./order-service
     ports:
-      - "9180:9180"
+      - "4044:4044"
     networks:
       - my_network
 
