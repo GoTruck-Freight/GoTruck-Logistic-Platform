@@ -27,8 +27,8 @@ public class TruckNameController {
     }
 
     @GetMapping("/{id}")
-    public TruckNameDTO findTruckNameById(@PathVariable Long id){
-        return truckNameService.findTruckNameById(id);
+    public TruckNameDTO getTruckNameById(@PathVariable Long id){
+        return truckNameService.getTruckNameById(id);
     }
 
     @PostMapping()

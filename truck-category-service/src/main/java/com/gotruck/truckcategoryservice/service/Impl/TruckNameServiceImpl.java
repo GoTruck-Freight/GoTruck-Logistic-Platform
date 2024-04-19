@@ -35,7 +35,7 @@ public class TruckNameServiceImpl implements TruckNameService {
     }
 
     @Override
-    public TruckNameDTO findTruckNameById(Long id) {
+    public TruckNameDTO getTruckNameById(Long id) {
         Optional<TruckName> truckNameOptional = truckNameRepository.findById(id);
         if (truckNameOptional.isPresent()){
             TruckName truckName = truckNameOptional.get();

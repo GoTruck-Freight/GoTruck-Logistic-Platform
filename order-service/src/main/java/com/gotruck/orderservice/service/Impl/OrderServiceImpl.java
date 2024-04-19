@@ -1,18 +1,16 @@
 package com.gotruck.orderservice.service.Impl;
 
+import com.gotruck.commonlibs.dto.TruckNameDTO;
+import com.gotruck.orderservice.client.TruckNameClient;
 import com.gotruck.orderservice.dto.OrderDTO;
 import com.gotruck.orderservice.exceptions.OrderNotFoundException;
 import com.gotruck.orderservice.mapper.OrderMapper;
 import com.gotruck.orderservice.model.Order;
 import com.gotruck.orderservice.repository.OrderRepository;
 import com.gotruck.orderservice.service.OrderService;
-//import com.gotruck.truckcategoryservice.model.TruckName;
-//import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -22,15 +20,13 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-//    private final TruckNameRepository truckNameRepository;
-    private final RestTemplate restTemplate;
+    private final TruckNameClient truckNameClient;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, RestTemplate restTemplate) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, TruckNameClient truckNameClient) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
-//        this.truckNameRepository = truckNameRepository;
-        this.restTemplate = restTemplate;
+        this.truckNameClient = truckNameClient;
     }
 
     @Override
@@ -56,17 +52,13 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-
     @Override
     public OrderDTO addNewOrder(OrderDTO orderDTO) {
-        // TruckName məlumatını REST API ilə çəkirik
-        String truckCategoryServiceUrl = "http://localhost:9080/truck-category/api/truck-names/";
-        ResponseEntity<TruckNameDTO> response = restTemplate.getForEntity(truckCategoryServiceUrl + orderDTO.getTruckNameId(), TruckNameDTO.class);
-
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            TruckNameDTO truckNameDTO = response.getBody();
+        // TruckName entitisini tapmaq
+        TruckNameDTO truckNameDTO = truckNameClient.getTruckNameById(orderDTO.getTruckNameId());
+        if (truckNameDTO != null) {
             Order newOrder = orderMapper.dtoToOrder(orderDTO);
-            newOrder.setTruckNameId(truckNameDTO.getId()); // TruckName id-ni set edirik
+            newOrder.setTruckNameId(truckNameDTO.getId());
             Order savedOrder = orderRepository.save(newOrder);
             return orderMapper.orderToDto(savedOrder);
         } else {

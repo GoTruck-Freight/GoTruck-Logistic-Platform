@@ -7,7 +7,7 @@ import java.util.List;
 public interface TruckNameService {
     List<String> getAllTruckNames();
 
-    TruckNameDTO findTruckNameById(Long id);
+    TruckNameDTO getTruckNameById(Long id);
 
     TruckNameDTO addNewTruckName(TruckNameDTO truckNameDTO);
 

@@ -1,10 +1,10 @@
-package com.example.trackingservice;
+package com.gotruck.commonlibs;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TrackingServiceApplicationTests {
+class CommonLibsApplicationTests {
 
 	@Test
 	void contextLoads() {
