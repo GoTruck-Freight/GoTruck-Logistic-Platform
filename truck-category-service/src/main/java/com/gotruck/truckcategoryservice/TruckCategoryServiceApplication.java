@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.gotruck.truckcategoryservice.repository")
-@ComponentScan(basePackages = {"com.gotruck.truckcategoryservice.dto", "com.gotruck.truckcategoryservice.mapper"})
 public class TruckCategoryServiceApplication {
 
 	public static void main(String[] args) {

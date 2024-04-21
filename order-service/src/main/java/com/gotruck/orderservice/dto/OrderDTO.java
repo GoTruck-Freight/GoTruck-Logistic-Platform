@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class OrderDTO {
     private String deliveryLocation;
     @Enumerated(EnumType.STRING)
     private OrderType orderType;
+    @CreationTimestamp
     private LocalDateTime createdAt;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date pickupDate;
@@ -111,5 +113,29 @@ public class OrderDTO {
 
     public void setOrderType(OrderType orderType) {
         this.orderType = orderType;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = LocalDateTime.now();;
+    }
+
+    public Date getPickupDate() {
+        return pickupDate;
+    }
+
+    public void setPickupDate(Date pickupDate) {
+        this.pickupDate = pickupDate;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

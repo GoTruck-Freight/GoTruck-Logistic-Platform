@@ -6,6 +6,7 @@ import com.gotruck.orderservice.dto.OrderDTO;
 import com.gotruck.orderservice.exceptions.OrderNotFoundException;
 import com.gotruck.orderservice.mapper.OrderMapper;
 import com.gotruck.orderservice.model.Order;
+import com.gotruck.orderservice.model.enums.OrderType;
 import com.gotruck.orderservice.repository.OrderRepository;
 import com.gotruck.orderservice.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderDTO> findByOrderType(OrderType orderType){
+        List<Order> ordersByType = orderRepository.findByOrderType(orderType);
+    if (ordersByType.isEmpty()){
+        throw new OrderNotFoundException("No orders found with order type: " + orderType);
+    }
+    return ordersByType.stream()
+            .map(orderMapper::orderToDto)
+            .collect(Collectors.toList());
+}
+
+    @Override
     public OrderDTO addNewOrder(OrderDTO orderDTO) {
         // TruckName entitisini tapmaq
         TruckNameDTO truckNameDTO = truckNameClient.getTruckNameById(orderDTO.getTruckNameId());
@@ -72,16 +84,36 @@ public class OrderServiceImpl implements OrderService {
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
 
-            order.setMaxPayment(updatedOrderDTO.getMaxPayment());
+            if (updatedOrderDTO.getMinPayment() != null) {
+                order.setMaxPayment(updatedOrderDTO.getMaxPayment());
+            }
+            if (updatedOrderDTO.getMaxPayment() != null){
             order.setMinPayment(updatedOrderDTO.getMinPayment());
+            }
+            if (updatedOrderDTO.getProposedPayment() != null){
             order.setProposedPayment(updatedOrderDTO.getProposedPayment());
-            order.setTotalWeight(updatedOrderDTO.getTotalWeight());
-            order.setDeliveryRoute(updatedOrderDTO.getDeliveryRoute());
-            order.setPickupLocation(updatedOrderDTO.getPickupLocation());
-            order.setDeliveryLocation(updatedOrderDTO.getDeliveryLocation());
-            order.setOrderType(updatedOrderDTO.getOrderType());
-            order.setPickupDate(updatedOrderDTO.getPickupDate());
-            order.setNote(updatedOrderDTO.getNote());
+            }
+            if (updatedOrderDTO.getTotalWeight() != null) {
+                order.setTotalWeight(updatedOrderDTO.getTotalWeight());
+            }
+            if (updatedOrderDTO.getDeliveryLocation() != null) {
+                order.setDeliveryRoute(updatedOrderDTO.getDeliveryRoute());
+            }
+            if (updatedOrderDTO.getPickupDate() != null) {
+                order.setPickupLocation(updatedOrderDTO.getPickupLocation());
+            }
+            if (updatedOrderDTO.getDeliveryLocation() != null) {
+                order.setDeliveryLocation(updatedOrderDTO.getDeliveryLocation());
+            }
+            if (updatedOrderDTO.getOrderType() != null) {
+                order.setOrderType(updatedOrderDTO.getOrderType());
+            }
+            if (updatedOrderDTO.getPickupDate() != null) {
+                order.setPickupDate(updatedOrderDTO.getPickupDate());
+            }
+            if (updatedOrderDTO.getNote() != null) {
+                order.setNote(updatedOrderDTO.getNote());
+            }
 
             Order updatedOrder = orderRepository.save(order);
             return orderMapper.orderToDto(updatedOrder);

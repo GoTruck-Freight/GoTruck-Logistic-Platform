@@ -16,7 +16,8 @@ public interface OrderMapper {
     @Mapping(target = "id", ignore = true)
     Order dtoToOrder(OrderDTO dto);
 
-    @Mapping(target = "orderType", ignore = true)
+//    @Mapping(target = "orderType", ignore = true)
+    @Mapping(target = "orderType", source = "orderType", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     OrderDTO orderToDto(Order entity);
 
 }

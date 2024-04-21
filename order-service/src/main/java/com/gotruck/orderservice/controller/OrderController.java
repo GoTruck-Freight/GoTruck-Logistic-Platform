@@ -1,6 +1,7 @@
 package com.gotruck.orderservice.controller;
 
 import com.gotruck.orderservice.dto.OrderDTO;
+import com.gotruck.orderservice.model.enums.OrderType;
 import com.gotruck.orderservice.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,9 @@ public class OrderController {
     public OrderDTO findOrderById(@PathVariable Long id){
         return orderService.findOrderById(id);
     }
+
+    @GetMapping("type/{orderType}")
+    public List<OrderDTO> findByOrderType(@PathVariable String orderType){ return orderService.findByOrderType(OrderType.valueOf(orderType));}
 
     @PostMapping
     @ResponseStatus(CREATED)
