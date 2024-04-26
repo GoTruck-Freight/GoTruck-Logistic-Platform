@@ -16,7 +16,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
-    private Long id;
     private Double minPayment;
     private Double maxPayment;
     private Double proposedPayment;
@@ -34,14 +33,6 @@ public class OrderDTO {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date pickupDate;
     private String note;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Double getMinPayment() {
         return minPayment;

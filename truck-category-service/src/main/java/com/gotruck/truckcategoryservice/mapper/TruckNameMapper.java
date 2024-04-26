@@ -13,7 +13,6 @@ import org.mapstruct.factory.Mappers;
 public interface TruckNameMapper {
     TruckNameMapper INSTANCE = Mappers.getMapper(TruckNameMapper.class);
 
-//    @Mapping(target = "id", ignore = true)
     TruckName dtoToTruckName(TruckNameDTO dto);
 
     TruckNameDTO truckNameToDto(TruckName entity);

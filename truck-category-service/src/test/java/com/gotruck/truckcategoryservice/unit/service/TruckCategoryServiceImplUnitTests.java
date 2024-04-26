@@ -1,4 +1,4 @@
-package com.gotruck.truckcategoryservice.service;
+package com.gotruck.truckcategoryservice.unit.service;
 
 import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
 import com.gotruck.truckcategoryservice.mapper.TruckCategoryMapper;

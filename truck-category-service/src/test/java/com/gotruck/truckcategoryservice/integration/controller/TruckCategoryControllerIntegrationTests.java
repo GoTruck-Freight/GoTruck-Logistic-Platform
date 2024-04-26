@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class TruckCategoryControllerIntegrationTests {
+class TruckCategoryControllerIntegrationTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,8 +38,8 @@ public class TruckCategoryControllerIntegrationTests {
     private TruckCategoryDTO testCategoryDTO;
 
     @BeforeEach
-    public void setUp() {
-//        testCategoryDTO = new TruckCategoryDTO();
+    void setUp() {
+        testCategoryDTO = new TruckCategoryDTO();
         testCategoryDTO.setId(1L);
         testCategoryDTO.setDescription("Test Category");
         testCategoryDTO.setMaxLoadCapacity(1000.0);
@@ -47,7 +47,7 @@ public class TruckCategoryControllerIntegrationTests {
     }
 
     @Test
-    public void testGetTruckCategoryById() throws Exception {
+    void testGetTruckCategoryById() throws Exception {
         when(truckCategoryService.getTruckCategoryById(1L)).thenReturn(testCategoryDTO);
 
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/truck-categories/1")
@@ -60,7 +60,7 @@ public class TruckCategoryControllerIntegrationTests {
     }
 
     @Test
-    public void testAddNewTruckCategory() throws Exception {
+    void testAddNewTruckCategory() throws Exception {
         when(truckCategoryService.addNewTruckCategory(any(TruckCategoryDTO.class))).thenReturn(testCategoryDTO);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/truck-categories")
@@ -72,7 +72,7 @@ public class TruckCategoryControllerIntegrationTests {
     }
 
     @Test
-    public void testUpdateTruckCategory() throws Exception {
+    void testUpdateTruckCategory() throws Exception {
         when(truckCategoryService.updateTruckCategory(any(Long.class), any(testCategoryDTO.getClass()))).thenReturn(testCategoryDTO);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/truck-categories/2")
@@ -81,13 +81,12 @@ public class TruckCategoryControllerIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Test Category"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.maxLoadCapacity").value(1000.0))
-                // Diğer alanları kontrol edin...
+                // Other fields...
                 .andDo(print());
     }
 
-
     @Test
-    public void testDeleteTruckCategory() throws Exception {
+    void testDeleteTruckCategory() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/truck-categories/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());

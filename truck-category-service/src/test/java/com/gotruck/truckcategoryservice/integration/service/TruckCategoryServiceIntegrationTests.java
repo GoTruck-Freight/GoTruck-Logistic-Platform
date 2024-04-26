@@ -43,7 +43,7 @@ public class TruckCategoryServiceIntegrationTests {
     private TruckCategoryDTO testCategoryDTO;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testCategoryDTO = new TruckCategoryDTO();
         testCategoryDTO.setId(1L);
         testCategoryDTO.setDescription("Test Category");
@@ -52,7 +52,7 @@ public class TruckCategoryServiceIntegrationTests {
     }
 
     @Test
-    public void testGetAllTruckCategories() {
+    void testGetAllTruckCategories() {
         when(truckCategoryRepository.findAll()).thenReturn(Collections.singletonList(new TruckCategory()));
         when(truckCategoryMapper.truckCategoryToDto(any(TruckCategory.class))).thenReturn(testCategoryDTO);
 
@@ -64,7 +64,7 @@ public class TruckCategoryServiceIntegrationTests {
     }
 
     @Test
-    public void testGetTruckCategoryById() {
+    void testGetTruckCategoryById() {
         when(truckCategoryRepository.findById(any(Long.class))).thenReturn(Optional.of(new TruckCategory()));
         when(truckCategoryMapper.truckCategoryToDto(any(TruckCategory.class))).thenReturn(testCategoryDTO);
 
@@ -75,7 +75,7 @@ public class TruckCategoryServiceIntegrationTests {
     }
 
     @Test
-    public void testAddNewTruckCategory() {
+    void testAddNewTruckCategory() {
         when(truckNameRepository.findById(any())).thenReturn(Optional.of(new TruckName()));
         when(truckCategoryMapper.dtoToTruckCategory(any())).thenReturn(new TruckCategory());
         when(truckCategoryMapper.truckCategoryToDto(any())).thenReturn(testCategoryDTO);
@@ -87,7 +87,7 @@ public class TruckCategoryServiceIntegrationTests {
     }
 
     @Test
-    public void testUpdateTruckCategory() {
+   void testUpdateTruckCategory() {
         TruckCategory updatedCategory = new TruckCategory();
         updatedCategory.setId(1L);
         updatedCategory.setDescription("Updated Category");
@@ -102,7 +102,7 @@ public class TruckCategoryServiceIntegrationTests {
     }
 
     @Test
-    public void testDeleteTruckCategory() {
+    void testDeleteTruckCategory() {
         when(truckCategoryRepository.existsById(1L)).thenReturn(true);
 
         truckCategoryService.deleteTruckCategory(1L);
