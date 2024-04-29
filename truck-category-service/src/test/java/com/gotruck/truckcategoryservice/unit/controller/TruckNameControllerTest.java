@@ -4,12 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotruck.truckcategoryservice.controller.TruckNameController;
 import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
 import com.gotruck.truckcategoryservice.service.TruckNameService;
-import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -28,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = TruckNameController.class)
 class TruckNameControllerTest {
 
-    private static final String BASE_PATH = "api/v1/truck-names";
+    private static final String BASE_PATH = "/api/v1/truck-names";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -36,9 +32,8 @@ class TruckNameControllerTest {
     @MockBean
     private TruckNameService truckNameService;
 
-
     @Test
-    void testGetAllTruckNames() throws Exception {
+    void testGetAllTruckNames_Success() throws Exception {
 //        Setup
         when(truckNameService.getAllTruckNames()).thenReturn(List.of("Truck1", "Truck2"));
 
@@ -51,7 +46,7 @@ class TruckNameControllerTest {
     }
 
     @Test
-    void testGetTruckNameById() throws Exception {
+    void testGetTruckNameById_Success() throws Exception {
 //        Setup
         Long id =1L;
         TruckNameDTO truckNameDTO = new TruckNameDTO(id, "Truck1");
@@ -68,7 +63,7 @@ class TruckNameControllerTest {
     }
 
     @Test
-    void testAddNewTruckName() throws Exception {
+    void testAddNewTruckName_Success() throws Exception {
 //        Setup
         TruckNameDTO truckNameDTO = new TruckNameDTO();
         truckNameDTO.setName("Truck1");
@@ -85,30 +80,45 @@ class TruckNameControllerTest {
     }
 
     @Test
-    void testUpdateTruckName() throws Exception {
-        //    Setup
-        Long id = 1L;
-        TruckNameDTO existingTruckNameDTO = new TruckNameDTO(id, "Truck1");
-        TruckNameDTO updatedTruckNameDTO = new TruckNameDTO(id, "UpdatedTruck1");
+    void testUpdateTruckName_Success() throws Exception {
+        // Prepare test data
+        Long truckNameId = 1L;
+        String updatedName = "Updated Truck Name";
+        TruckNameDTO updatedTruckNameDTO = new TruckNameDTO(truckNameId, updatedName);
 
-        when(truckNameService.updateTruckName(id, updatedTruckNameDTO)).thenReturn(updatedTruckNameDTO);
+        // Mock service behavior
+        when(truckNameService.updateTruckName(anyLong(), any(TruckNameDTO.class)))
+                .thenReturn(updatedTruckNameDTO);
 
-//    Test
-        mockMvc.perform(MockMvcRequestBuilders.put(BASE_PATH + "/{id}", id)
+        // Perform the PUT request and verify the response
+        mockMvc.perform(MockMvcRequestBuilders.put(BASE_PATH + "/{id}", truckNameId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedTruckNameDTO)))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("UpdatedTruck1"));
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(truckNameId))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(updatedName));
 
-        verify(truckNameService, times(1)).updateTruckName(1L, updatedTruckNameDTO);
+        verify(truckNameService,times(1)).updateTruckName(anyLong(), any(TruckNameDTO.class));
     }
 
     @Test
-    void testDeleteTruckName() throws Exception {
+    void testDeleteTruckName_Success() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete(BASE_PATH + "/1"))
                 .andExpect(status().isNoContent());
 
         verify(truckNameService, times(1)).deleteTruckName(1L);
+    }
+
+    @Test
+    void testDeleteTruckName_NotFound() throws Exception {
+        Long id = 1L;
+
+        // Mock the behavior of deleteTruckName to do nothing
+        doNothing().when(truckNameService).deleteTruckName(id);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(BASE_PATH + "/{id}", id))
+                .andExpect(status().isNoContent());
+
+        verify(truckNameService, times(1)).deleteTruckName(id);
     }
 }

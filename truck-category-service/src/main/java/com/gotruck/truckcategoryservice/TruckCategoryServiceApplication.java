@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.gotruck.truckcategoryservice.repository")
 public class TruckCategoryServiceApplication {
 
 	public static void main(String[] args) {

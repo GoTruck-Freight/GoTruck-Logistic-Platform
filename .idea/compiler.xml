@@ -20,6 +20,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="com.gotruck.order-service.common-libs.test" target="17" />
+      <module name="common-libs.test" target="17" />
       <module name="config-server" target="17" />
     </bytecodeTargetLevel>
   </component>

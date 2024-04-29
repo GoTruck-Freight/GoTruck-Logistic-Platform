@@ -2,6 +2,7 @@ package com.gotruck.truckcategoryservice.controller;
 
 import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
 import com.gotruck.truckcategoryservice.service.TruckCategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,13 +34,13 @@ public class TruckCategoryController {
 
     @PostMapping()
     @ResponseStatus(CREATED)
-    public TruckCategoryDTO addNewTruckCategory(@RequestBody TruckCategoryDTO truckCategoryDTO) {
+    public TruckCategoryDTO addNewTruckCategory(@Valid @RequestBody TruckCategoryDTO truckCategoryDTO) {
         return truckCategoryService.addNewTruckCategory(truckCategoryDTO);
     }
 
     @PutMapping("/{id}")
     public TruckCategoryDTO updateTruckCategory(
-            @PathVariable Long id, @RequestBody TruckCategoryDTO truckCategoryDTO) {
+            @PathVariable Long id, @Valid @RequestBody TruckCategoryDTO truckCategoryDTO) {
             return truckCategoryService.updateTruckCategory(id, truckCategoryDTO);
     }
 

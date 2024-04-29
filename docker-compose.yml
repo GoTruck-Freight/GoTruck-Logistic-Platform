@@ -3,6 +3,8 @@ version: '3'
 services:
 
   config-server:
+    container_name: gotruck_config_server
+    image: gotruck/config-server:1.0
     build:
       context: ./config-server
     ports:
@@ -11,40 +13,55 @@ services:
       - my_network
 
   api-gateway:
+    container_name: gotruck_api_gateway
+    image: gotruck/api-gateway:1.0
     build:
       context: ./api-gateway
+      dockerfile: Dockerfile
     ports:
       - "8060:8060"
     networks:
       - my_network
 
-  service-registry:
+  discovery-server:
+    container_name: gotruck_discovery_server
+    image: gotruck/discovery-server:1.0
     build:
       context: ./discovery-server
+      dockerfile: Dockerfile
     ports:
       - "8761:8761"
     networks:
       - my_network
 
   shipper-service:
+    container_name: gotruck_shipper_service
+    image: gotruck/shipper-service:1.0
     build:
       context: ./shipper-service
+      dockerfile: Dockerfile
     ports:
       - "9091:9091"
     networks:
       - my_network
 
   truck-category-service:
+    container_name: gotruck_truck_category_service
+    image: gotruck/truck-category-service:1.0
     build:
       context: ./truck-category-service
+      dockerfile: Dockerfile
     ports:
       - "9080:9080"
     networks:
       - my_network
 
   order-service:
+    container_name: gotruck_order_service
+    image: gotruck/order-service:1.0
     build:
       context: ./order-service
+      dockerfile: Dockerfile
     ports:
       - "4044:4044"
     networks:
@@ -74,3 +91,4 @@ services:
 
 networks:
   my_network:
+    driver: bridge
