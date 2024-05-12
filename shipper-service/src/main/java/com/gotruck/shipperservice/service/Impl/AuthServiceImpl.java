@@ -1,25 +1,27 @@
 package com.gotruck.shipperservice.service.Impl;
 
 import com.gotruck.shipperservice.dto.*;
+import com.gotruck.shipperservice.exceptions.EmailAlreadyExistsException;
+import com.gotruck.shipperservice.exceptions.UnauthorizedException;
+import com.gotruck.shipperservice.exceptions.UserNotFoundException;
+import com.gotruck.shipperservice.mapper.UserMapper;
 import com.gotruck.shipperservice.model.User;
+import com.gotruck.shipperservice.model.enums.AccountStatus;
 import com.gotruck.shipperservice.repository.UserRepository;
 import com.gotruck.shipperservice.service.AuthService;
 import com.gotruck.shipperservice.service.EmailService;
 import com.gotruck.shipperservice.service.ImageService;
 import com.gotruck.shipperservice.service.JwtService;
 import io.jsonwebtoken.JwtException;
-import org.springframework.http.HttpStatus;
-import jakarta.ws.rs.InternalServerErrorException;
-import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -31,40 +33,36 @@ public class AuthServiceImpl  implements AuthService {
     private  JwtService jwtService;
     private  EmailService emailService;
     private ImageService imageService;
+    private final UserMapper userMapper;
+
 
     @Autowired
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, EmailService emailService, ImageService imageService) {
+    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
+                           JwtService jwtService, EmailService emailService, ImageService imageService, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.emailService = emailService;
         this.imageService = imageService;
+        this.userMapper = userMapper;
     }
     @Override
-    public User register(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new IllegalArgumentException("Email address is already in use");
+            throw new EmailAlreadyExistsException();
         }
-
-        String password = registerRequest.getPassword();
-        if (!isValidPassword(password)) {
-            throw new IllegalArgumentException("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit");
-        }
-
-        User user = new User();
-        user.setCompanyName(registerRequest.getCompanyName());
-        user.setContactName(registerRequest.getContactName());
-        user.setPhoneNumber(registerRequest.getPhoneNumber());
-        user.setEmail(registerRequest.getEmail());
-        user.setImage(imageService.getDefaultImageUrl());
-        user.setPassword(passwordEncoder.encode(password));
-//        user.setRole(Role.USER); user.setRole(registerRequest.Role.role);
-        return userRepository.save(user);
-    }
-
-    private boolean isValidPassword(String password) {
-        return password != null && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$");
+        UserDto userDto = UserDto.builder()
+                .companyName(registerRequest.getCompanyName())
+                .contactName(registerRequest.getContactName())
+                .phoneNumber(registerRequest.getPhoneNumber())
+                .email(registerRequest.getEmail())
+                .image(imageService.getDefaultImageUrl())
+                .accountStatus(AccountStatus.ENABLED)
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .build();
+        User user = userMapper.toUser(userDto);
+        userRepository.save(user);
     }
 
     @Override
@@ -72,17 +70,13 @@ public class AuthServiceImpl  implements AuthService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loginRequest.getEmail(),
-                    loginRequest.getPassword())
-            );
+                    loginRequest.getPassword()));
         } catch (AuthenticationException e) {
-            throw new IllegalArgumentException("Invalid email or password", e);
-        }
+            throw new UnauthorizedException("Invalid email or password");}
         var user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
+                .orElseThrow(UserNotFoundException::new);
         var jwt = jwtService.generateAccessToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         jwtAuthResponse.setAccessToken(jwt);
         jwtAuthResponse.setRefreshToken(refreshToken);
@@ -90,60 +84,61 @@ public class AuthServiceImpl  implements AuthService {
     }
 
     @Override
+    public void logout() {
+        // Get the current authentication object
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Invalidate the authentication object (sign-out)
+        authentication.setAuthenticated(false);
+        // Clear the security context holder
+        SecurityContextHolder.clearContext();
+    }
+
+    @Override
     public void forgotPassword(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found with email: " + email));
-
+                .orElseThrow(UserNotFoundException::new);
         String resetToken = jwtService.generateResetToken(user);
 //        String resetLink = "http://gotruck.com/reset-password?token=" + resetToken;
-        String resetLink = "http://localhost:9091/api/v1/auth/reset-password/token/" + resetToken;
-        String emailBody = "To reset your password, click on the link below:\n" + resetLink;
-        emailService.sendEmail(email, "Password Reset", emailBody);
+        String resetLink = "http://localhost:9091/api/v1/auth/reset-password/" + resetToken;
+        String emailBody= "Hello,\n\n" +
+                "You have requested to reset your password. Please click on the link below to reset your password. If you did not request this action, you can ignore this email.\n\n" +
+                "Password Reset Link: " + resetLink + "\n\n" +
+                "This link will expire in 1 hour for security reasons. If you encounter any issues, please contact support.\n\n" +
+                "Best regards,\nGoTruck Team";
+        String emailSubject = "Password Reset";
+        emailService.sendEmail(email, emailSubject, emailBody);
     }
 
     @Override
     public void resetPassword(String token, ResetPasswordRequest request) {
         try {
-            // Extract user ID from the token
             Long userId = jwtService.extractUserId(token);
-            // Fetch user from the database
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new NotFoundException("User not found"));
-            // Update the user's password
+                    .orElseThrow(UserNotFoundException::new);
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-            // Save the updated user
             userRepository.save(user);
         } catch (JwtException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
-        } catch (NotFoundException e) {
-            throw e; // Bu vəziyyətdə özel olaraq ələ alınacaq bir xəta deyil, doğrudan fırlatılıyor
-        } catch (Exception e) {
-            throw new InternalServerErrorException("An error occurred while resetting the password");
+            throw new UnauthorizedException("Invalid or expired token");
         }
     }
 
-    public JwtAuthResponse refreshAccessToken(RefreshTokenRequest refreshTokenRequest) {
-        try {
-            String userEmail = jwtService.extractUserName(refreshTokenRequest.getRefreshToken());
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found for email: " + userEmail));
+    @Override
+    public JwtAuthResponse refreshAccessToken(String refreshToken) {
+        String username = jwtService.extractUserName(refreshToken);
 
-            if (jwtService.validationToken(refreshTokenRequest.getRefreshToken(), user)) {
-                // Generate a new access token and refresh token
-                var newAccessToken = jwtService.generateAccessToken(user);
-                var newRefreshToken = jwtService.generateRefreshToken(user);
+        // Find the user in the database using the username
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(UserNotFoundException::new);
 
-                JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
-                jwtAuthResponse.setAccessToken(newAccessToken);
-                jwtAuthResponse.setRefreshToken(newRefreshToken);
-                return jwtAuthResponse;
-            } else {
-                throw new IllegalArgumentException("Invalid refresh token");
-            }
-        } catch (Exception e) {
-            // Handle any exceptions and return an appropriate response
-            return new JwtAuthResponse();
+        if (!jwtService.validateToken(refreshToken, user)) {
+            throw new UnauthorizedException("Invalid refresh token");
         }
+        String newAccessToken = jwtService.generateAccessToken(user);
+
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setAccessToken(newAccessToken);
+        jwtAuthResponse.setRefreshToken(refreshToken);
+        return jwtAuthResponse;
     }
 }
 

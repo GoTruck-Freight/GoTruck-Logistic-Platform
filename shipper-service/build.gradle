@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.2.4'
-	id 'io.spring.dependency-management' version '1.1.4'
+	id 'org.springframework.boot' version "${springBootVersion}"
+	id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
 }
 
 group = 'com.gotruck'
@@ -21,7 +21,12 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	set('springCloudVersion', "2023.0.1")
+}
+
 dependencies {
+//	spring
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -29,13 +34,22 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
-	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.3'
-	implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.3'
-	implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.3'
-	implementation group: 'jakarta.mail', name: 'jakarta.mail-api', version: '2.0.1'
-	implementation group: 'com.sun.mail', name: 'jakarta.mail', version: '2.0.1'
-	implementation 'org.apache.commons:commons-lang3:3.12.0'
-	implementation group: 'jakarta.ws.rs', name: 'jakarta.ws.rs-api', version: '3.0.0-M1'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+//	jwt
+	implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+	implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+	implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+	implementation "org.apache.commons:commons-lang3:${apacheCommonsVersion}"
+	implementation "jakarta.ws.rs:jakarta.ws.rs-api:${jakartaWsRsApiVersion}"
+
+//	mapstruct
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+	implementation project(':common') // Common module as dependency
 
 
 	compileOnly 'org.projectlombok:lombok'
@@ -43,6 +57,12 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 tasks.named('test') {

@@ -1,4 +1,5 @@
 rootProject.name = 'order-service'
-include 'common-libs'
-project(':common-libs').projectDir = new File('../common-libs')
+include 'common'
+project(':common').projectDir = new File(settingsDir, '../common')
+
 

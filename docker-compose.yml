@@ -37,9 +37,9 @@ services:
   shipper-service:
     container_name: gotruck_shipper_service
     image: gotruck/shipper-service:1.0
-    build:
-      context: ./shipper-service
-      dockerfile: Dockerfile
+#    build:
+#      context: ./shipper-service
+#      dockerfile: Dockerfile
     ports:
       - "9091:9091"
     networks:
@@ -48,9 +48,9 @@ services:
   truck-category-service:
     container_name: gotruck_truck_category_service
     image: gotruck/truck-category-service:1.0
-    build:
-      context: ./truck-category-service
-      dockerfile: Dockerfile
+#    build:
+#      context: ./truck-category-service
+#      dockerfile: Dockerfile
     ports:
       - "9080:9080"
     networks:

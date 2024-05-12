@@ -3,7 +3,6 @@ package com.gotruck.truckcategoryservice.mapper;
 import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
 import com.gotruck.truckcategoryservice.model.TruckName;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;

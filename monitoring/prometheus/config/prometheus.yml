@@ -14,7 +14,7 @@ scrape_configs:
   - job_name: 'shipper-service'
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
-    metrics_path: /actuator/prometheus # this is the path on movies api used to provide prometheus with health info.
+    metrics_path: /actuator/prometheus # this is the path on api used to provide prometheus with health info.
     static_configs:
       - targets: ['host.docker.internal:9091'] # Simply, pointing out the target to be scrapped
         labels:

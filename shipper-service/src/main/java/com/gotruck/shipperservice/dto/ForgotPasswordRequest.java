@@ -1,19 +1,12 @@
 package com.gotruck.shipperservice.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ForgotPasswordRequest {
 
+    @NotBlank
     private String email;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

@@ -1,63 +1,38 @@
 package com.gotruck.shipperservice.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.gotruck.shipperservice.model.enums.AccountStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Setter
-@Getter
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserProfile {
+
+    @Size(max = 50, message = "Company name must not exceed 50 characters")
     private String companyName;
+
+    @Size(max = 50, message = "Contact name must not exceed 50 characters")
     private String contactName;
+
+    @Email(message = "Invalid email format")
     private String email;
+
+    @Size(max = 20, message = "Phone number must not exceed 20 characters")
+    @Pattern(
+            regexp = "^[0-9]*$",
+            message = "Invalid phone number format. Use only digits.")
     private String phoneNumber;
+
     private String image;
-    private String password;
 
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getContactName() {
-        return contactName;
-    }
-
-    public void setContactName(String contactName) {
-        this.contactName = contactName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accountStatus;
 }

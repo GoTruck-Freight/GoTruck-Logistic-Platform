@@ -1,19 +1,16 @@
 package com.gotruck.shipperservice.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.PreUpdate;
+import com.gotruck.shipperservice.model.enums.AccountStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.util.Date;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,84 +45,24 @@ public class RegisterRequest {
     )
     private String phoneNumber;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private AccountStatus accountStatus = AccountStatus.ENABLED;
+
     private String image;
 
-//  /  @Column(nullable = false)
+    @Override
+    public String toString() {
+        return new StringBuilder("RegisterRequest{")
+                .append("companyName='").append(companyName).append('\'')
+                .append(", contactName='").append(contactName).append('\'')
+                .append(", email='").append(email).append('\'')
+                .append(", password='").append("*****").append('\'')
+                .append(", phoneNumber='").append(phoneNumber).append('\'')
+                .append(", image='").append(image).append('\'')
+                .append(", accountStatus=").append(accountStatus).append('\'')
+                .append('}').toString();
 
-//   / @Enumerated(EnumType.STRING)
-
-//  /  private Role role;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = true, updatable = false)
-    private Date createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = true)
-    private Date updatedAt;
-
-    public String getCompanyName() {
-        return companyName;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getContactName() {
-        return contactName;
-    }
-
-    public void setContactName(String contactName) {
-        this.contactName = contactName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    @PreUpdate
-    public void setUpdatedAt() {
-        this.updatedAt = new Date();
-    }
 }

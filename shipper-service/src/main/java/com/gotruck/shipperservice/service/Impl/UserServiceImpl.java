@@ -1,13 +1,16 @@
 package com.gotruck.shipperservice.service.Impl;
 
+import com.gotruck.shipperservice.dto.UserDto;
 import com.gotruck.shipperservice.dto.UserProfile;
+import com.gotruck.shipperservice.exceptions.UnauthorizedException;
+import com.gotruck.shipperservice.exceptions.UserNotFoundException;
+import com.gotruck.shipperservice.mapper.UserMapper;
 import com.gotruck.shipperservice.model.User;
+import com.gotruck.shipperservice.model.enums.AccountStatus;
 import com.gotruck.shipperservice.repository.UserRepository;
-import com.gotruck.shipperservice.service.ImageService;
 import com.gotruck.shipperservice.service.UserService;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
@@ -16,120 +19,108 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @EnableWebSecurity
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
-    private final ImageService imageService;
-    public UserServiceImpl(UserRepository userRepository, ImageService imageService){
+    private final UserMapper userMapper;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper){
         this.userRepository = userRepository;
-        this.imageService = imageService;
+        this.userMapper = userMapper;
     }
 
     @Override
     public UserDetailsService userDetailsService() {
         return email -> userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                 .orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                 .orElseThrow(UserNotFoundException::new);
 
         // Create a UserDetails object using the user’s information
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                Collections.emptyList()
-        );
+                new ArrayList<>()); // No authorities for now
     }
-
     @Override
-    public UserProfile getUserProfile(String email) {
-        return userRepository.findByEmail(email)
-                .map(user -> {
-                    UserProfile userProfile = new UserProfile();
-                    userProfile.setEmail(user.getEmail());
-                    userProfile.setCompanyName(user.getCompanyName());
-                    userProfile.setContactName(user.getContactName());
-                    userProfile.setPhoneNumber(user.getPhoneNumber());
-                    userProfile.setImage(user.getImage() != null ? user.getImage() : imageService.getDefaultImageUrl()); // Use the user-uploaded image if available; otherwise, use the default image.
-                    return userProfile;
-                })
-
-                .orElseThrow(() -> new NotFoundException("User not found with email: " + email)); //Return an error if the user is not found
-    }
-
-    @Override
-    public Object getUserById(Long id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    UserProfile userProfile = new UserProfile();
-                    userProfile.setEmail(user.getEmail());
-                    userProfile.setCompanyName(user.getCompanyName());
-                    userProfile.setContactName(user.getContactName());
-                    userProfile.setPhoneNumber(user.getPhoneNumber());
-                    userProfile.setImage(user.getImage());
-                    userProfile.setPassword(user.getPassword());
-                    return userProfile;
-                })
-
-                .orElseThrow(() -> new NotFoundException("User not found 🤨")); // Return an error if the user is not found.
-    }
-
-    @Override
-    public ResponseEntity<?> updateProfile(UserProfile userProfile, Authentication authentication) {
+    public UserProfile getUserProfile(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new UnauthorizedException("User is not authenticated");
         }
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
+        return userMapper.toUserProfile(user);
+    }
 
+    @Override
+    public UserDto findOne(Long id) {
+        return userRepository.findById(id)
+                .map(userMapper::toUserDto)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public List<UserDto> findAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<String> updateProfile(UserProfile userProfile, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UnauthorizedException("User is not authenticated");
+        }
         String userEmail = authentication.getName();
-
-        Optional<User> userOptional = userRepository.findByEmail(userEmail);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        User user = userOptional.get();
-        updateUserProfile(user, userProfile);
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(UserNotFoundException::new);
+        UserDto userDto = userMapper.toUserDto(user);
+        updateUserProfile(userDto, userProfile);
+        user = userMapper.toUser(userDto);
         userRepository.save(user);
 
         return ResponseEntity.ok().body("Profile updated successfully");
     }
 
-    private void updateUserProfile(User user, UserProfile userProfile) {
-        if (userProfile.getCompanyName() != null) {
-            user.setCompanyName(userProfile.getCompanyName());
+    private void updateUserProfile(UserDto userDto, UserProfile userProfile) {
+        if (userProfile.getCompanyName() != null && !userProfile.getCompanyName().isEmpty()) {
+            userDto.setCompanyName(userProfile.getCompanyName());
         }
-        if (userProfile.getContactName() != null) {
-            user.setContactName(userProfile.getContactName());
+        if (userProfile.getContactName() != null && !userProfile.getContactName().isEmpty()) {
+            userDto.setContactName(userProfile.getContactName());
         }
-        if (userProfile.getPhoneNumber() != null) {
-            user.setPhoneNumber(userProfile.getPhoneNumber());
+        if (userProfile.getPhoneNumber() != null && !userProfile.getPhoneNumber().isEmpty()) {
+            userDto.setPhoneNumber(userProfile.getPhoneNumber());
         }
-        if (userProfile.getImage() != null) {
-            user.setImage(userProfile.getImage());
+        if (userProfile.getImage() != null && !userProfile.getImage().isEmpty()) {
+            userDto.setImage(userProfile.getImage());
         }
+    }
+    
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        userRepository.deleteById(id);
     }
 
     @Override
-    @Transactional
-    public void deleteUserByEmail(String email) {
-        // Find the user with the given email
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            // Delete the user from the database
-            userRepository.delete(userOptional.get());
-            // Return a success response message
-            ResponseEntity.ok().body("User has been deleted successfully");
-        } else {
-            // If user not found, return an appropriate error message
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with email " + email + " not found");
-        }
+    public void updateAccountStatus(Long id, AccountStatus newStatus) {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        user.setAccountStatus(newStatus);
+        userRepository.save(user);
     }
+
 }

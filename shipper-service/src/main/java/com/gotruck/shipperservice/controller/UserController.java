@@ -1,17 +1,21 @@
 package com.gotruck.shipperservice.controller;
 
+import com.gotruck.shipperservice.dto.UserDto;
 import com.gotruck.shipperservice.dto.UserProfile;
 import com.gotruck.shipperservice.model.User;
+import com.gotruck.shipperservice.model.enums.AccountStatus;
 import com.gotruck.shipperservice.repository.UserRepository;
 import com.gotruck.shipperservice.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 
 @RestController
@@ -21,62 +25,57 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
 
+    @Autowired
     public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
         this.userRepository = userRepository;
     }
 
-
-    @GetMapping("/getUserProfile")
-    public ResponseEntity getUserProfile(Principal principal){
-        if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String email = principal.getName(); // Userin e-posta adresini al
-        UserProfile userProfile = (UserProfile) userService.getUserProfile(email);
-        if (userProfile != null) {
-            return ResponseEntity.ok(userProfile);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfile> getUserProfile(Authentication authentication) {
+        return ResponseEntity.ok(userService.getUserProfile(authentication));
     }
 
-    @GetMapping("/getUserById/{userId}")
-    public ResponseEntity<?> getUserById(@PathVariable Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto> getUser(@PathVariable Long userId) {
+        UserDto userDto = userService.findOne(userId);
+        return ResponseEntity.ok(userDto);
     }
 
-    @PutMapping("/updateProfile")
-    public ResponseEntity<?> updateProfile(@RequestBody UserProfile userProfile, Authentication authentication) {
+    @PutMapping("/")
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UserProfile userProfile, Authentication authentication) {
         return userService.updateProfile(userProfile, authentication);
     }
 
-    @GetMapping("/getAllUser")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userRepository.findAll();
+    @GetMapping("/")
+    public ResponseEntity<List<UserDto>> findAll() {
+        List<UserDto> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/{company_name}")
+    @GetMapping("/company/{company_name}")
     public ResponseEntity<List<User>> getUsersByCompanyName(@PathVariable("company_name") String companyName) {
-        List<User> users = userRepository.findByCompanyName(companyName);
+        List<User> users = userRepository.findByCompanyNameIgnoreCaseContaining(companyName);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-            String userEmail = authentication.getName();
-            userService.deleteUserByEmail(userEmail);
-            return ResponseEntity.ok("Hesabınız uğurla silindi.");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Yetkisiz erişim.");
-        }
+    @GetMapping("/status/{account_status}")
+    public ResponseEntity<List<User>> getUsersByAccountStatus(@PathVariable("account_status") String accountStatus) {
+        AccountStatus status = AccountStatus.valueOf(accountStatus.toUpperCase());
+        List<User> users = userRepository.findByAccountStatus(status);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(NO_CONTENT)
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{userId}/status/")
+    public ResponseEntity<String> updateAccountStatus(@PathVariable Long userId, @RequestParam AccountStatus newStatus) {
+        userService.updateAccountStatus(userId, newStatus);
+        return ResponseEntity.ok().body("Account status updated successfully");
     }
 }

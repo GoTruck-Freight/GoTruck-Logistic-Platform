@@ -16,6 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
+    private Long id;
     private Double minPayment;
     private Double maxPayment;
     private Double proposedPayment;
@@ -111,7 +112,7 @@ public class OrderDTO {
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = LocalDateTime.now();;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Date getPickupDate() {

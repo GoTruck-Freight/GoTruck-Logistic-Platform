@@ -12,14 +12,6 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/common-libs" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/common-libs" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/config-server" />
         <option name="modules">
           <set>
@@ -39,7 +31,7 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$/order-service" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/common-libs" />
+            <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/order-service" />
           </set>
         </option>
@@ -48,6 +40,7 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$/shipper-service" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/shipper-service" />
           </set>
         </option>
@@ -57,6 +50,14 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/truck-category-service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../common" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../common" />
           </set>
         </option>
       </GradleProjectSettings>

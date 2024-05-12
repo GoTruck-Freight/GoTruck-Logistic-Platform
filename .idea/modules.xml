@@ -4,11 +4,11 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/GoTruck-Main.iml" filepath="$PROJECT_DIR$/.idea/GoTruck-Main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/api-gateway.iml" filepath="$PROJECT_DIR$/.idea/modules/api-gateway.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1640768095/com.gotruck.order-service.common-libs.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1640768095/com.gotruck.order-service.common-libs.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common-libs.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common-libs.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/406039258/com.gotruck.order-service.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/406039258/com.gotruck.order-service.common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/config-server/config-server.iml" filepath="$PROJECT_DIR$/config-server/config-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/order-service.iml" filepath="$PROJECT_DIR$/.idea/modules/order-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/order-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/order-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/406039258/shipper-service.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/406039258/shipper-service.common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipper-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/shipper-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/truck-category-service/truck-category-service.iml" filepath="$PROJECT_DIR$/truck-category-service/truck-category-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/truck-category-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/truck-category-service.main.iml" />

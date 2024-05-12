@@ -124,7 +124,7 @@ public class Order {
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = LocalDateTime.now();;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Date getPickupDate() {

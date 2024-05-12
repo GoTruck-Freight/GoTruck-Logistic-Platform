@@ -1,26 +1,20 @@
 package com.gotruck.shipperservice.repository;
 
 import com.gotruck.shipperservice.model.User;
-import org.springframework.context.annotation.ComponentScan;
+import com.gotruck.shipperservice.model.enums.AccountStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-@ComponentScan
 
 public interface UserRepository extends JpaRepository<User,Long> {
   Optional<User> findByEmail(String email);
 
-  Optional<User> findById(Long id);
+  List<User> findByCompanyNameIgnoreCaseContaining(String companyName);
 
-  List<User> findByCompanyName(String companyName);
+  List<User> findByAccountStatus(AccountStatus accountStatus);
 
   boolean existsByEmail(String email);
 
-  void deleteByEmail(String email);
-
-//  Optional<User> findByRole(Role role);
 }

@@ -1,5 +1,6 @@
 package com.gotruck.shipperservice.model;
 
+import com.gotruck.shipperservice.model.enums.AccountStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,8 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,12 +24,12 @@ import java.util.Date;
 @Table(name = "Shipper-user")
 
 public class User implements UserDetails {
-    @Getter
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     @NotBlank(message = "Company name is required")
     @Size(max = 50, message = "Company name must not exceed 50 characters")
     private String companyName;
@@ -56,19 +56,13 @@ public class User implements UserDetails {
             message = "Invalid phone number format. Use only digits.")
     private String phoneNumber;
 
-    @Transient // Bu alanın veritabanında saklanmamasını belirtir
-    private static final String DEFAULT_IMAGE_URL = "/images/driverrr-image.jpeg";
-
     @Column(length = 1000)
     private String image;
 
-
-//    @Enumerated(EnumType.STRING)
-
-//    @Column(nullable = false)
-
-//    private Role role;
-//    private AccountStatus accountStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "account_status")
+    @Builder.Default
+    private AccountStatus accountStatus = AccountStatus.ENABLED;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -77,7 +71,6 @@ public class User implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

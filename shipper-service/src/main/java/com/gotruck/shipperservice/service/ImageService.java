@@ -1,9 +1,14 @@
 package com.gotruck.shipperservice.service;
 
-public interface ImageService {
-    String getUploadDir();
+import org.springframework.web.multipart.MultipartFile;
 
-    void deleteImage(String fileName);
+public interface ImageService {
+
+    void deleteImage(String filePath);
+
+    void deleteUserImage();
 
     String getDefaultImageUrl();
+
+    void uploadImage(MultipartFile file);
 }

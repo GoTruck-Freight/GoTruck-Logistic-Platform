@@ -1,6 +1,6 @@
 package com.gotruck.orderservice.client;
 
-import com.gotruck.commonlibs.dto.TruckNameDTO;
+import com.gotruck.common.dto.TruckNameDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

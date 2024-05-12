@@ -31,6 +31,9 @@ spring:
 #          use_jdbc_metadata_defaults: false #to disable contextual lob creation when application starts.
       database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+#  resources:
+#    static-locations: classpath:${UPLOAD_DIR}
+
 server:
   port: ${SERVER_PORT}
 
@@ -40,6 +43,10 @@ upload:
 default:
   image:
     path: ${DEFAULT_IMAGE_PATH}
+
+security:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
 
 eureka:
   client:
@@ -76,6 +83,3 @@ management:
 #  config: classpath:log4j2-spring.xml
 
 
-security:
-  jwt:
-    secret-key: ${JWT_SECRET_KEY}

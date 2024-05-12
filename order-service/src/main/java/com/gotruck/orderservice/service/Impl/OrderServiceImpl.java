@@ -1,6 +1,6 @@
 package com.gotruck.orderservice.service.Impl;
 
-import com.gotruck.commonlibs.dto.TruckNameDTO;
+import com.gotruck.common.dto.TruckNameDTO;
 import com.gotruck.orderservice.client.TruckNameClient;
 import com.gotruck.orderservice.dto.OrderDTO;
 import com.gotruck.orderservice.exceptions.OrderNotFoundException;
