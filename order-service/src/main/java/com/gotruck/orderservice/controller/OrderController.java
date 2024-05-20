@@ -1,7 +1,9 @@
 package com.gotruck.orderservice.controller;
 
-import com.gotruck.orderservice.dto.OrderDTO;
-import com.gotruck.orderservice.model.enums.OrderType;
+import com.gotruck.common.dto.order.AllOrderDTO;
+import com.gotruck.common.dto.order.NewOrderDTO;
+import com.gotruck.common.model.enums.order.OrderStatus;
+import com.gotruck.common.model.enums.order.OrderType;
 import com.gotruck.orderservice.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,27 +22,32 @@ public class OrderController {
     }
 
     @GetMapping()
-    private List<OrderDTO> getAllOrders(){
+    private List<AllOrderDTO> getAllOrders(){
         return orderService.getAllOrders();
     }
 
-    @GetMapping("/{id}")
-    public OrderDTO findOrderById(@PathVariable Long id){
-        return orderService.findOrderById(id);
+    @GetMapping("/{orderId}")
+    public AllOrderDTO findOrderById(@PathVariable Long orderId){
+        return orderService.findOrderById(orderId);
     }
 
-    @GetMapping("type/{orderType}")
-    public List<OrderDTO> findByOrderType(@PathVariable String orderType){ return orderService.findByOrderType(OrderType.valueOf(orderType));}
+    @GetMapping("/type/{orderType}")
+    public List<AllOrderDTO> findByOrderType(@PathVariable String orderType){ return orderService.findByOrderType(OrderType.valueOf(orderType));}
 
-    @PostMapping
+    @GetMapping("/status/{orderStatus}")
+    public List<AllOrderDTO> findByOrderStatus(@PathVariable String orderStatus){ return orderService.findByOrderStatus(OrderStatus.valueOf(orderStatus));}
+
+    @PostMapping()
     @ResponseStatus(CREATED)
-    public OrderDTO addNewOrder(@RequestBody OrderDTO orderDTO){
-        return orderService.addNewOrder(orderDTO);
+    public NewOrderDTO createNewOrder(@RequestBody NewOrderDTO newOrderDTO){
+        NewOrderDTO createdOrder = orderService.createNewOrder(newOrderDTO);
+//        System.out.println("Created Order in OrderService: " + createdOrder); // Debugging
+        return createdOrder;
     }
 
-    @PutMapping("/{id}")
-    public OrderDTO updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO){
-        return orderService.updateOrder(id, orderDTO);
+    @PutMapping("/{orderId}")
+    public NewOrderDTO updateOrder(@PathVariable Long orderId, @RequestBody NewOrderDTO newOrderDTO){
+        return orderService.updateOrder(orderId, newOrderDTO);
     }
 
     @DeleteMapping("/{id}")

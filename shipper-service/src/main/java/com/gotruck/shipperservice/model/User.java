@@ -24,8 +24,6 @@ import java.util.Date;
 @Table(name = "Shipper-user")
 
 public class User implements UserDetails {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

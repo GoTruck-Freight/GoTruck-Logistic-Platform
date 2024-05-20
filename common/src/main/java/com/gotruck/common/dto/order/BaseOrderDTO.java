@@ -1,36 +1,32 @@
-package com.gotruck.common.dto;
+package com.gotruck.common.dto.order;
 
-import com.gotruck.common.model.OrderType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.gotruck.common.model.enums.order.OrderStatus;
+import com.gotruck.common.model.enums.order.OrderType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDTO {
-    private Long id;
+public class BaseOrderDTO {
+    // Bütün sifarişlər üçün ümumi məlumatları saxlayan baza DTO
+    private Long orderId;
+    private Long shipperId;
     private Double minPayment;
     private Double maxPayment;
     private Double proposedPayment;
     private Long truckNameId;
     private Double totalWeight;
-    //    private String costumerFeedback;
-    //    private String orderStatus;
     private String deliveryRoute;
     private String pickupLocation;
     private String deliveryLocation;
-    @Enumerated(EnumType.STRING)
     private OrderType orderType;
-    @CreationTimestamp
     private LocalDateTime createdAt;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date pickupDate;
     private String note;
+    private OrderStatus orderStatus;
 }

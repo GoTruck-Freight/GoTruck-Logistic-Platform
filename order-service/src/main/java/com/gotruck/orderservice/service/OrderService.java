@@ -1,18 +1,19 @@
 package com.gotruck.orderservice.service;
 
-import com.gotruck.orderservice.dto.OrderDTO;
-import com.gotruck.orderservice.model.enums.OrderType;
+import com.gotruck.common.dto.order.*;
+import com.gotruck.common.model.enums.order.OrderStatus;
+import com.gotruck.common.model.enums.order.OrderType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface OrderService {
-    List<OrderDTO> getAllOrders();
-    OrderDTO findOrderById(Long id);
-    OrderDTO addNewOrder(OrderDTO orderDTO);
-    OrderDTO updateOrder(Long id, OrderDTO orderDTO);
-    void deleteOrder(Long id);
-
-    List<OrderDTO> findByOrderType(OrderType orderType);
+    List<AllOrderDTO> getAllOrders();
+    AllOrderDTO findOrderById(Long orderId);
+    List<AllOrderDTO> findByOrderType(OrderType orderType);
+    List<AllOrderDTO> findByOrderStatus(OrderStatus orderStatus);
+    NewOrderDTO createNewOrder(NewOrderDTO newOrderDTO);
+    NewOrderDTO updateOrder(Long orderId, NewOrderDTO newOrderDTO);
+    void deleteOrder(Long orderId);
 }

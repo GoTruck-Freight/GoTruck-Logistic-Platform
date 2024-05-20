@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Service
-public class JwtTokenServiceImpl implements JwtService {
+public class JwtServiceImpl implements JwtService {
 
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 45; // 45 min
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 5; // 5 days
@@ -28,7 +28,7 @@ public class JwtTokenServiceImpl implements JwtService {
     private final SecretKey secretKey;
 
     @Autowired
-    public JwtTokenServiceImpl(@Value("${security.jwt.secret-key}") String secretKey) {
+    public JwtServiceImpl(@Value("${security.jwt.secret-key}") String secretKey) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 
@@ -93,12 +93,15 @@ public class JwtTokenServiceImpl implements JwtService {
     }
 
     private Claims extractAllClaims(String token){
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7).trim();
+        }
         try {
             return Jwts
                     .parser()
                     .verifyWith(secretKey)
                     .build()
-                    .parseSignedClaims(token)
+                    .parseSignedClaims(token.trim())
                     .getPayload();
         } catch (SignatureException e) {
             throw new UnauthorizedException("Invalid token. Please check your token and try again.");

@@ -31,8 +31,10 @@ spring:
 #          use_jdbc_metadata_defaults: false #to disable contextual lob creation when application starts.
       database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-#  resources:
-#    static-locations: classpath:${UPLOAD_DIR}
+  jackson:
+    date-format: dd-MM-yyyy
+    default-property-inclusion: non_null
+
 
 server:
   port: ${SERVER_PORT}
@@ -82,4 +84,11 @@ management:
 #logging:
 #  config: classpath:log4j2-spring.xml
 
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000 #5 seconds
+        readTimeout: 5000  #5 seconds
+        loggerLevel: basic #basic, none, full
 

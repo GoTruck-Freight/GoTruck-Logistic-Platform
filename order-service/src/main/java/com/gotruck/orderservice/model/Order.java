@@ -1,6 +1,7 @@
 package com.gotruck.orderservice.model;
 
-import com.gotruck.orderservice.model.enums.OrderType;
+import com.gotruck.common.model.enums.order.OrderStatus;
+import com.gotruck.common.model.enums.order.OrderType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,14 +20,13 @@ import java.util.Date;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long orderId;
+    private Long shipperId;
     private Double minPayment;
     private Double maxPayment;
     private Double proposedPayment;
     private Long truckNameId;
     private Double totalWeight;
-//    private String costumerFeedback;
-//    private String orderStatus;
     private String deliveryRoute;
     private String pickupLocation;
     private String deliveryLocation;
@@ -38,108 +38,17 @@ public class Order {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date pickupDate;
     private String note;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status")
+    private OrderStatus orderStatus;
+    private LocalDateTime cancelledAt;
+    private String rejectReason;
+    private String cancelledBy;
+    private LocalDateTime acceptedAt;
+    private LocalDateTime loadedAt;
+    private LocalDateTime inTransitAt;
+    private LocalDateTime unloadedAt;
+    private LocalDateTime completedAt;
+    //    private String costumerFeedback;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Double getMinPayment() {
-        return minPayment;
-    }
-
-    public void setMinPayment(Double minPayment) {
-        this.minPayment = minPayment;
-    }
-
-    public Double getMaxPayment() {
-        return maxPayment;
-    }
-
-    public void setMaxPayment(Double maxPayment) {
-        this.maxPayment = maxPayment;
-    }
-
-    public Double getProposedPayment() {
-        return proposedPayment;
-    }
-
-    public void setProposedPayment(Double proposedPayment) {
-        this.proposedPayment = proposedPayment;
-    }
-
-    public Long getTruckNameId() {
-        return truckNameId;
-    }
-
-    public void setTruckNameId(Long truckNameId) {
-        this.truckNameId = truckNameId;
-    }
-
-    public Double getTotalWeight() {
-        return totalWeight;
-    }
-
-    public void setTotalWeight(Double totalWeight) {
-        this.totalWeight = totalWeight;
-    }
-
-    public String getDeliveryRoute() {
-        return deliveryRoute;
-    }
-
-    public void setDeliveryRoute(String deliveryRoute) {
-        this.deliveryRoute = deliveryRoute;
-    }
-
-    public String getPickupLocation() {
-        return pickupLocation;
-    }
-
-    public void setPickupLocation(String pickupLocation) {
-        this.pickupLocation = pickupLocation;
-    }
-
-    public String getDeliveryLocation() {
-        return deliveryLocation;
-    }
-
-    public void setDeliveryLocation(String deliveryLocation) {
-        this.deliveryLocation = deliveryLocation;
-    }
-
-    public OrderType getOrderType() {
-        return orderType;
-    }
-
-    public void setOrderType(OrderType orderType) {
-        this.orderType = orderType;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public Date getPickupDate() {
-        return pickupDate;
-    }
-
-    public void setPickupDate(Date pickupDate) {
-        this.pickupDate = pickupDate;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
 }

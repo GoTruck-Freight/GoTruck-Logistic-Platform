@@ -64,5 +64,4 @@ public class RegisterRequest {
                 .append('}').toString();
 
     }
-
 }

@@ -1,12 +1,13 @@
 package com.gotruck.orderservice.service.Impl;
 
-import com.gotruck.common.dto.TruckNameDTO;
+import com.gotruck.common.dto.order.*;
+import com.gotruck.common.dto.truckCategory.TruckNameDTO;
+import com.gotruck.common.model.enums.order.OrderStatus;
+import com.gotruck.common.model.enums.order.OrderType;
 import com.gotruck.orderservice.client.TruckNameClient;
-import com.gotruck.orderservice.dto.OrderDTO;
 import com.gotruck.orderservice.exceptions.OrderNotFoundException;
 import com.gotruck.orderservice.mapper.OrderMapper;
 import com.gotruck.orderservice.model.Order;
-import com.gotruck.orderservice.model.enums.OrderType;
 import com.gotruck.orderservice.repository.OrderRepository;
 import com.gotruck.orderservice.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,103 +31,86 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getAllOrders() {
-        try{
-            List<Order> orders = orderRepository.findAll();
-            return orders.stream()
-                    .map(orderMapper::orderToDto)
-                    .collect(Collectors.toList());}
-            catch(Exception e) {
-                throw new RuntimeException("Error fetching all orders");
-            }
+    public List<AllOrderDTO> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream()
+                .map(orderMapper::toAllOrderDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public OrderDTO findOrderById(Long id) {
-        Optional<Order> orderOptional = orderRepository.findById(id);
-        if (orderOptional.isPresent()){
-            Order order = orderOptional.get();
-            return orderMapper.orderToDto(order);
-        } else {
-            throw new OrderNotFoundException("Order not found with id: " + id);
+    public AllOrderDTO findOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
+        AllOrderDTO allOrderDTO = orderMapper.toAllOrderDTO(order);
+        orderMapper.mapOrderToAllOrderDTO(order, allOrderDTO);
+        return allOrderDTO;
+    }
+
+    @Override
+    public List<AllOrderDTO> findByOrderType(OrderType orderType) {
+        List<Order> orders = orderRepository.findByOrderType(orderType);
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("No orders found with order type: " + orderType);
         }
+        //  orders.forEach(order -> System.out.println("Found order: " + order)); // Debugging
+        return orders.stream()
+                .map(order -> {
+                    AllOrderDTO allOrderDTO = orderMapper.toAllOrderDTO(order);
+                    orderMapper.mapOrderToAllOrderDTO(order, allOrderDTO);
+        //             System.out.println("Mapped AllOrderDTO: " + allOrderDTO); // Debugging
+                    return allOrderDTO;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<OrderDTO> findByOrderType(OrderType orderType){
-        List<Order> ordersByType = orderRepository.findByOrderType(orderType);
-    if (ordersByType.isEmpty()){
-        throw new OrderNotFoundException("No orders found with order type: " + orderType);
-    }
-    return ordersByType.stream()
-            .map(orderMapper::orderToDto)
-            .collect(Collectors.toList());
-}
-
-    @Override
-    public OrderDTO addNewOrder(OrderDTO orderDTO) {
-        // TruckName entitisini tapmaq
-        TruckNameDTO truckNameDTO = truckNameClient.getTruckNameById(orderDTO.getTruckNameId());
-        if (truckNameDTO != null) {
-            Order newOrder = orderMapper.dtoToOrder(orderDTO);
-            newOrder.setTruckNameId(truckNameDTO.getId());
-            Order savedOrder = orderRepository.save(newOrder);
-            return orderMapper.orderToDto(savedOrder);
-        } else {
-            throw new OrderNotFoundException("TruckName not found with id: " + orderDTO.getTruckNameId());
+    public List<AllOrderDTO> findByOrderStatus(OrderStatus orderStatus) {
+        List<Order> orders = orderRepository.findByOrderStatus(orderStatus);
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("No orders found with order type: " + orderStatus);
         }
+        return orders.stream()
+                .map(order -> {
+                    AllOrderDTO allOrderDTO = orderMapper.toAllOrderDTO(order);
+                    orderMapper.mapOrderToAllOrderDTO(order, allOrderDTO);
+                    return allOrderDTO;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public OrderDTO updateOrder(Long id, OrderDTO updatedOrderDTO) {
-        Optional<Order> orderOptional = orderRepository.findById(id);
-        if (orderOptional.isPresent()) {
-            Order order = orderOptional.get();
-
-            if (updatedOrderDTO.getMinPayment() != null) {
-                order.setMaxPayment(updatedOrderDTO.getMaxPayment());
-            }
-            if (updatedOrderDTO.getMaxPayment() != null){
-            order.setMinPayment(updatedOrderDTO.getMinPayment());
-            }
-            if (updatedOrderDTO.getProposedPayment() != null){
-            order.setProposedPayment(updatedOrderDTO.getProposedPayment());
-            }
-            if (updatedOrderDTO.getTotalWeight() != null) {
-                order.setTotalWeight(updatedOrderDTO.getTotalWeight());
-            }
-            if (updatedOrderDTO.getDeliveryLocation() != null) {
-                order.setDeliveryRoute(updatedOrderDTO.getDeliveryRoute());
-            }
-            if (updatedOrderDTO.getPickupDate() != null) {
-                order.setPickupLocation(updatedOrderDTO.getPickupLocation());
-            }
-            if (updatedOrderDTO.getDeliveryLocation() != null) {
-                order.setDeliveryLocation(updatedOrderDTO.getDeliveryLocation());
-            }
-            if (updatedOrderDTO.getOrderType() != null) {
-                order.setOrderType(updatedOrderDTO.getOrderType());
-            }
-            if (updatedOrderDTO.getPickupDate() != null) {
-                order.setPickupDate(updatedOrderDTO.getPickupDate());
-            }
-            if (updatedOrderDTO.getNote() != null) {
-                order.setNote(updatedOrderDTO.getNote());
-            }
-
-            Order updatedOrder = orderRepository.save(order);
-            return orderMapper.orderToDto(updatedOrder);
-        } else {
-            throw new OrderNotFoundException("Order not found with id: " + id);
+    public NewOrderDTO createNewOrder(NewOrderDTO newOrderDTO) {
+        // Fetch the TruckName entity
+        TruckNameDTO truckNameDTO = truckNameClient.getTruckNameById(newOrderDTO.getTruckNameId());
+        if (truckNameDTO == null) {
+            throw new OrderNotFoundException("TruckName not found with id: " + newOrderDTO.getTruckNameId());
         }
+        // Map the DTO to the Order entity
+        Order newOrder = orderMapper.toEntity(newOrderDTO);
+        newOrder.setOrderStatus(OrderStatus.ACTIVE);
+        newOrder.setTruckNameId(truckNameDTO.getId());
+        // Save the new Order entity
+        Order savedOrder = orderRepository.save(newOrder);
+        // Map the saved Order entity back to a DTO
+        return orderMapper.toNewOrderDTO(savedOrder);
     }
 
     @Override
-    public void deleteOrder(Long id) {
-        if(orderRepository.existsById(id)){
-            orderRepository.deleteById(id);
+    public NewOrderDTO updateOrder(Long orderId, NewOrderDTO newOrderDTO) {
+        Order existingOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
+        orderMapper.updateOrderFromDTO(newOrderDTO, existingOrder);
+        existingOrder = orderRepository.save(existingOrder);
+        return orderMapper.toNewOrderDTO(existingOrder);
+    }
+
+    @Override
+    public void deleteOrder(Long orderId) {
+        if (orderRepository.existsById(orderId)) {
+            orderRepository.deleteById(orderId);
         } else {
-            throw new OrderNotFoundException("Order not found with id: " + id);
+            throw new OrderNotFoundException("Order not found with id: " + orderId);
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.gotruck.common.dto;
+package com.gotruck.common.dto.truckCategory;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -24,15 +24,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class AuthServiceImpl  implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private  AuthenticationManager authenticationManager;
-    private  JwtService jwtService;
-    private  EmailService emailService;
-    private ImageService imageService;
+    private  final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final EmailService emailService;
+    private final ImageService imageService;
     private final UserMapper userMapper;
 
 
@@ -61,7 +60,9 @@ public class AuthServiceImpl  implements AuthService {
                 .accountStatus(AccountStatus.ENABLED)
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .build();
+        // System.out.println("UserDto: " + userDto); // Debugging
         User user = userMapper.toUser(userDto);
+        // System.out.println("User: " + user); // Debugging
         userRepository.save(user);
     }
 
