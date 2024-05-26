@@ -2,92 +2,134 @@ version: '3'
 
 services:
 
-  config-server:
-    container_name: gotruck_config_server
-    image: gotruck/config-server:1.0
-    build:
-      context: ./config-server
+  db_truck_category:
+    container_name: truck_category_db
+    image: postgres
     ports:
-      - "8088:8088"
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: truck_category_db
+      POSTGRES_USER: AmanOvcuUzaqDur
+      POSTGRES_PASSWORD: MenBilmirem_29%#3-7@*
+
+  db_shipper:
+    container_name: shipper_db
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: shipper_service_db
+      POSTGRES_USER: AmanOvcuUzaqDur
+      POSTGRES_PASSWORD: MenBilmirem_29%#3-7@*
+
+  db_order:
+    container_name: order_db
+    image: postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: orders_db
+      POSTGRES_USER: AmanOvcuUzaqDur
+      POSTGRES_PASSWORD: MenBilmirem_29%#3-7@*
+
+  discovery-server:
+    container_name: gotruck_discovery_server
+#    image: gotruck/discovery-server:latest
+    build:
+      context: ./discovery-server
+    ports:
+      - "8761:8761"
+    restart: unless-stopped
     networks:
       - my_network
 
   api-gateway:
-    container_name: gotruck_api_gateway
-    image: gotruck/api-gateway:1.0
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
-    ports:
-      - "8060:8060"
-    networks:
-      - my_network
-
-  discovery-server:
-    container_name: gotruck_discovery_server
-    image: gotruck/discovery-server:1.0
-    build:
-      context: ./discovery-server
-      dockerfile: Dockerfile
-    ports:
-      - "8761:8761"
-    networks:
-      - my_network
-
-  shipper-service:
-    container_name: gotruck_shipper_service
-    image: gotruck/shipper-service:1.0
-#    build:
-#      context: ./shipper-service
-#      dockerfile: Dockerfile
-    ports:
-      - "9091:9091"
-    networks:
-      - my_network
+   container_name: gotruck_api_gateway
+#   image: gotruck/api-gateway:latest
+   build:
+     context: ./api-gateway
+   ports:
+    - "8060:8060"
+   restart: unless-stopped
+   depends_on:
+     - discovery-server
+   environment:
+     - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+   networks:
+    - my_network
 
   truck-category-service:
     container_name: gotruck_truck_category_service
-    image: gotruck/truck-category-service:1.0
-#    build:
-#      context: ./truck-category-service
-#      dockerfile: Dockerfile
+#    image: gotruck/truck-category-service:latest
+    build:
+      context: ./truck-category-service
+      dockerfile: Dockerfile
     ports:
       - "9080:9080"
+    restart: unless-stopped
+    depends_on:
+      - db_truck_category
+      - discovery-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     networks:
       - my_network
 
   order-service:
     container_name: gotruck_order_service
-    image: gotruck/order-service:1.0
+#    image: gotruck/order-service:latest
     build:
       context: ./order-service
-      dockerfile: Dockerfile
     ports:
       - "4044:4044"
+    restart: unless-stopped
+    depends_on:
+      - db_order
+      - truck-category-service
+      - discovery-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    networks:
+      - my_network
+
+  shipper-service:
+    container_name: gotruck_shipper_service
+#    image: gotruck/shipper-service:latest
+    build:
+      context: ./shipper-service
+    ports:
+      - "9091:9091"
+    restart: unless-stopped
+    depends_on:
+      - db_shipper
+      - order-service
+      - discovery-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     networks:
       - my_network
 
     # Prometheus
-  prometheus:
-      container_name: prometheus
-      image: prom/prometheus:latest
-      ports:
-        - "9090:9090"
-      volumes:
-        - ./monitoring/prometheus/config/prometheus.yml:/etc/monitoring/prometheus/config/prometheus.yml
-      networks:
-        - my_network
-
-    # Grafana
-  grafana:
-      container_name: grafana
-      image: grafana/grafana-oss:latest
-      ports:
-        - "3000:3000"
-      environment:
-        GH_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
-      networks:
-        - my_network
+#  prometheus:
+#      container_name: prometheus
+#      image: prom/prometheus:latest
+#      ports:
+#        - "9090:9090"
+#      volumes:
+#        - ./monitoring/prometheus/config/prometheus.yml:/etc/monitoring/prometheus/config/prometheus.yml
+#      networks:
+#        - my_network
+#
+#    # Grafana
+#  grafana:
+#      container_name: grafana
+#      image: grafana/grafana-oss:latest
+#      ports:
+#        - "3000:3000"
+#      environment:
+#        GH_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+#      networks:
+#        - my_network
 
 networks:
   my_network:

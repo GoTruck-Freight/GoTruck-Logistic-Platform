@@ -24,14 +24,14 @@ server:
   port: ${SERVER_PORT}
 
 
+#this is for eureka client
 eureka:
   client:
     registerWithEureka: true
     serviceUrl:
-      defaultZone: ${EUREKA_DEFAULT_ZONE}
+      defaultZone: ${EUREKA_SERVER:http://discovery-server:8761/eureka/}
     healthcheck:
       enabled: true
-
 
 feign:
   client:

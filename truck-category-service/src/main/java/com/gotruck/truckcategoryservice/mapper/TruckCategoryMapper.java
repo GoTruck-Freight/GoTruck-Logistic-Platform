@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TruckCategoryMapper {
-    TruckCategoryMapper INSTANCE = Mappers.getMapper(TruckCategoryMapper.class);
+//    TruckCategoryMapper INSTANCE = Mappers.getMapper(TruckCategoryMapper.class);
 
     TruckCategory dtoToTruckCategory(TruckCategoryDTO dto);
 

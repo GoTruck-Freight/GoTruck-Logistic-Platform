@@ -2,13 +2,12 @@ package com.gotruck.truckcategoryservice.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
-@Setter
-@Getter
-@Component
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TruckCategoryDTO {
     private Long id;
 
