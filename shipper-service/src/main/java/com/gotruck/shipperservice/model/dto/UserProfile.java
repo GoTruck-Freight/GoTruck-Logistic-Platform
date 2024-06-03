@@ -1,4 +1,4 @@
-package com.gotruck.shipperservice.dto;
+package com.gotruck.shipperservice.model.dto;
 
 import com.gotruck.shipperservice.model.enums.AccountStatus;
 import jakarta.persistence.EnumType;
@@ -6,14 +6,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.Objects;
 
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+
 public class UserProfile {
 
     @Size(max = 50, message = "Company name must not exceed 50 characters")
@@ -35,4 +36,21 @@ public class UserProfile {
 
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserProfile that = (UserProfile) o;
+        return Objects.equals(companyName, that.companyName) &&
+                Objects.equals(contactName, that.contactName) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(phoneNumber, that.phoneNumber) &&
+                Objects.equals(image, that.image) &&
+                accountStatus == that.accountStatus;
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(companyName, contactName, email, phoneNumber, accountStatus, image);
+    }
 }

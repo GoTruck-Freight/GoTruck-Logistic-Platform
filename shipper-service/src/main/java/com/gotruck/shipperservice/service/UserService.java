@@ -1,7 +1,7 @@
 package com.gotruck.shipperservice.service;
 
-import com.gotruck.shipperservice.dto.UserDto;
-import com.gotruck.shipperservice.dto.UserProfile;
+import com.gotruck.shipperservice.model.dto.UserDto;
+import com.gotruck.shipperservice.model.dto.UserProfile;
 import com.gotruck.shipperservice.model.enums.AccountStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;

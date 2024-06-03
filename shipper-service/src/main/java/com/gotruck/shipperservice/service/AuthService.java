@@ -1,6 +1,9 @@
 package com.gotruck.shipperservice.service;
 
-import com.gotruck.shipperservice.dto.*;
+import com.gotruck.shipperservice.model.dto.request.LoginRequest;
+import com.gotruck.shipperservice.model.dto.request.RegisterRequest;
+import com.gotruck.shipperservice.model.dto.request.ResetPasswordRequest;
+import com.gotruck.shipperservice.model.dto.response.JwtAuthResponse;
 
 
 public interface AuthService {

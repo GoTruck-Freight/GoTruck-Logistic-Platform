@@ -1,22 +1,21 @@
 package com.gotruck.shipperservice.controller;
 
-import com.gotruck.shipperservice.dto.*;
+import com.gotruck.shipperservice.model.dto.request.*;
+import com.gotruck.shipperservice.model.dto.response.JwtAuthResponse;
 import com.gotruck.shipperservice.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
-
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @PostMapping("/register")
     @ResponseStatus(CREATED)

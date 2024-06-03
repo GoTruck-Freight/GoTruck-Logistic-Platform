@@ -1,9 +1,10 @@
 package com.gotruck.shipperservice.service.Impl;
 
 import com.gotruck.shipperservice.exceptions.UserNotFoundException;
-import com.gotruck.shipperservice.model.User;
-import com.gotruck.shipperservice.repository.UserRepository;
+import com.gotruck.shipperservice.dao.entity.UserEntity;
+import com.gotruck.shipperservice.dao.repository.UserRepository;
 import com.gotruck.shipperservice.service.ImageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -20,9 +21,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
-    @Autowired
-    private UserRepository userRepository;
+
+    private  final UserRepository userRepository;
 
     @Value("${upload.dir}")
     private String uploadDir;
@@ -53,19 +55,19 @@ public class ImageServiceImpl implements ImageService {
             String userEmail = authentication.getName();
 
             // Update user profile image path in the database
-            User user = userRepository.findByEmail(userEmail)
+            UserEntity userEntity = userRepository.findByEmail(userEmail)
                     .orElseThrow(UserNotFoundException::new);
 
             // Delete the old image if it exists and is not the default image
-            String oldImage = user.getImage();
+            String oldImage = userEntity.getImage();
             if (oldImage != null && !oldImage.equals(defaultImagePath)) {
                 deleteImage(oldImage);
             }
 
             // Convert the path to use forward slashes explicitly
             String imagePath = "/images/profileImages/" + fileName;
-            user.setImage(imagePath);
-            userRepository.save(user);
+            userEntity.setImage(imagePath);
+            userRepository.save(userEntity);
 
             // Return the full file path as the image URL
         } catch (IOException e) {
@@ -93,20 +95,20 @@ public class ImageServiceImpl implements ImageService {
         String userEmail = authentication.getName();
 
         // Find the user in the database
-        User user = userRepository.findByEmail(userEmail)
+        UserEntity userEntity = userRepository.findByEmail(userEmail)
                 .orElseThrow(UserNotFoundException::new);
 
         // Delete the old image if it exists and is not the default image
-        String oldImage = user.getImage();
+        String oldImage = userEntity.getImage();
         if (oldImage != null && !oldImage.equals(defaultImagePath)) {
             deleteImage(oldImage);
         }
 
         // Set the user's image to the default image
-        user.setImage(defaultImagePath);
+        userEntity.setImage(defaultImagePath);
 
         // Save the updated user to the database
-        userRepository.save(user);
+        userRepository.save(userEntity);
     }
 
     @Override

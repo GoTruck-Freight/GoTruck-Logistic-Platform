@@ -1,46 +1,46 @@
 package com.gotruck.truckcategoryservice.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
+import lombok.*;
+import java.math.BigDecimal;
 
-
+@Getter
+@Setter
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Entity
-@DynamicUpdate
 @Table(name = "truck_categories")
 public class TruckCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "description")
     private String description;
 
-    @NotNull(message = "Max load capacity must not be null")
-    @Positive(message = "Max load capacity must be positive")
-    private double maxLoadCapacity;
+    @NotNull
+    @Column(name = "max_load_capacity")
+    private BigDecimal maxLoadCapacity;
 
-    @NotNull(message = "Cargo area width must not be null")
-    @Positive(message = "Cargo area width must be positive")
-    private double cargoAreaWidth;
+    @NotNull
+    @Column(name = "cargo_area_width")
+    private BigDecimal cargoAreaWidth;
 
-    @NotNull(message = "Cargo area length must not be null")
-    @Positive(message = "Cargo area length must be positive")
-    private double cargoAreaLength;
+    @NotNull
+    @Column(name = "cargo_area_length")
+    private BigDecimal cargoAreaLength;
 
-    @NotNull(message = "Cargo area height must not be null")
-    @Positive(message = "Cargo area height must be positive")
-    private double cargoAreaHeight;
+    @NotNull
+    @Column(name = "cargo_area_height")
+    private BigDecimal cargoAreaHeight;
 
-    @Positive(message = "Cargo cubic volume must be positive")
-    private double cargoCubicVolume;
+    @Column(name = "cargo_cubic_volume")
+    private BigDecimal cargoCubicVolume;
 
+//    @NotNull
+    @Column(name = "truck_name_id")
     private Long truckNameId;
 }
 

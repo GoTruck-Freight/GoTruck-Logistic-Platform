@@ -47,7 +47,7 @@ public class TruckCategoryServiceIntegrationTests {
         testCategoryDTO = new TruckCategoryDTO();
         testCategoryDTO.setId(1L);
         testCategoryDTO.setDescription("Test Category");
-        testCategoryDTO.setMaxLoadCapacity(1000.0);
+//        testCategoryDTO.setMaxLoadCapacity(1000.0);
         // Set other properties as needed
     }
 

@@ -1,0 +1,4 @@
+id,description,max_load_capacity,cargo_area_width,cargo_area_length,cargo_area_height,cargo_cubic_volume,truck_name_id
+1,"Small Truck",1000,2.5,3.0,2.0,15.0,1
+2,"Medium Truck",2000,3.0,4.0,2.5,30.0,2
+3,"Large Truck",3000,3.5,5.0,3.0,52.5,3

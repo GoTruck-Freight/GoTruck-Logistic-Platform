@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -71,42 +70,28 @@ public class TruckCategoryServiceImpl implements TruckCategoryService {
     }
 
     @Override
-    public TruckCategoryDTO updateTruckCategory(Long id, TruckCategoryDTO updatedTruckCategoryDTO) {
-        Optional<TruckCategory> truckCategoryOptional = truckCategoryRepository.findById(id);
-        if (truckCategoryOptional.isPresent()) {
-            TruckCategory truckCategory = truckCategoryOptional.get();
-
-            // Update only the fields that are not null in updatedTruckCategoryDTO
-            if (Objects.nonNull(updatedTruckCategoryDTO.getDescription())) {
-                truckCategory.setDescription(updatedTruckCategoryDTO.getDescription());
-            }
-            if (Objects.nonNull(updatedTruckCategoryDTO.getMaxLoadCapacity()) && updatedTruckCategoryDTO.getMaxLoadCapacity() > 0) {
-                truckCategory.setMaxLoadCapacity(updatedTruckCategoryDTO.getMaxLoadCapacity());
-            }
-            if (Objects.nonNull(updatedTruckCategoryDTO.getCargoAreaWidth()) && updatedTruckCategoryDTO.getCargoAreaWidth() > 0) {
-                truckCategory.setCargoAreaWidth(updatedTruckCategoryDTO.getCargoAreaWidth());
-            }
-            if (Objects.nonNull(updatedTruckCategoryDTO.getCargoAreaLength()) && updatedTruckCategoryDTO.getCargoAreaLength() > 0) {
-                truckCategory.setCargoAreaLength(updatedTruckCategoryDTO.getCargoAreaLength());
-            }
-            if (Objects.nonNull(updatedTruckCategoryDTO.getCargoAreaHeight()) && updatedTruckCategoryDTO.getCargoAreaHeight() > 0) {
-                truckCategory.setCargoAreaHeight(updatedTruckCategoryDTO.getCargoAreaHeight());
-            }
-            if (Objects.nonNull(updatedTruckCategoryDTO.getCargoCubicVolume()) && updatedTruckCategoryDTO.getCargoCubicVolume() > 0) {
-                truckCategory.setCargoCubicVolume(updatedTruckCategoryDTO.getCargoCubicVolume());
-            }
-            if (Objects.nonNull(updatedTruckCategoryDTO.getTruckNameId())) {
-                truckCategory.setTruckNameId(updatedTruckCategoryDTO.getTruckNameId());
-            }
-
-            // Save the updated truck category
-            TruckCategory updatedTruckCategory = truckCategoryRepository.save(truckCategory);
-
-            // Map and return the DTO
-            return truckCategoryMapper.truckCategoryToDto(updatedTruckCategory);
-        } else {
-            throw new TruckCategoryNotFoundException("Truck category not found with id: " + id);
+    public TruckCategoryDTO updateTruckCategory(Long id,TruckCategoryDTO truckCategoryDTO) {
+        Optional<TruckCategory> truckCategoryOptional = truckCategoryRepository.findById(truckCategoryDTO.getId());
+        if (!truckCategoryOptional.isPresent()) {
+            throw new TruckCategoryNotFoundException("Truck category not found with id: " + truckCategoryDTO.getId());
         }
+
+        TruckCategory existingTruckCategory = truckCategoryOptional.get();
+
+        // Update the fields of the existing truck category
+        existingTruckCategory.setDescription(truckCategoryDTO.getDescription());
+        existingTruckCategory.setMaxLoadCapacity(truckCategoryDTO.getMaxLoadCapacity());
+        existingTruckCategory.setCargoAreaWidth(truckCategoryDTO.getCargoAreaWidth());
+        existingTruckCategory.setCargoAreaLength(truckCategoryDTO.getCargoAreaLength());
+        existingTruckCategory.setCargoAreaHeight(truckCategoryDTO.getCargoAreaHeight());
+        existingTruckCategory.setCargoCubicVolume(truckCategoryDTO.getCargoCubicVolume());
+        existingTruckCategory.setTruckNameId(truckCategoryDTO.getTruckNameId());
+
+        // Save the updated truck category
+        TruckCategory updatedTruckCategory = truckCategoryRepository.save(existingTruckCategory);
+
+        // Return the updated truck category DTO
+        return truckCategoryMapper.truckCategoryToDto(updatedTruckCategory);
     }
 
     @Override

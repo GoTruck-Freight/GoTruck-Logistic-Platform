@@ -1,20 +1,23 @@
 package com.gotruck.shipperservice.service.Impl;
 
-import com.gotruck.shipperservice.dto.*;
+import com.gotruck.shipperservice.model.dto.UserDto;
+import com.gotruck.shipperservice.model.dto.request.LoginRequest;
+import com.gotruck.shipperservice.model.dto.request.RegisterRequest;
+import com.gotruck.shipperservice.model.dto.request.ResetPasswordRequest;
+import com.gotruck.shipperservice.model.dto.response.JwtAuthResponse;
 import com.gotruck.shipperservice.exceptions.EmailAlreadyExistsException;
 import com.gotruck.shipperservice.exceptions.UnauthorizedException;
 import com.gotruck.shipperservice.exceptions.UserNotFoundException;
 import com.gotruck.shipperservice.mapper.UserMapper;
-import com.gotruck.shipperservice.model.User;
+import com.gotruck.shipperservice.dao.entity.UserEntity;
 import com.gotruck.shipperservice.model.enums.AccountStatus;
-import com.gotruck.shipperservice.repository.UserRepository;
+import com.gotruck.shipperservice.dao.repository.UserRepository;
 import com.gotruck.shipperservice.service.AuthService;
 import com.gotruck.shipperservice.service.EmailService;
 import com.gotruck.shipperservice.service.ImageService;
 import com.gotruck.shipperservice.service.JwtService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl  implements AuthService {
 
     private final UserRepository userRepository;
@@ -34,18 +38,6 @@ public class AuthServiceImpl  implements AuthService {
     private final ImageService imageService;
     private final UserMapper userMapper;
 
-
-    @Autowired
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
-                           JwtService jwtService, EmailService emailService, ImageService imageService, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-        this.emailService = emailService;
-        this.imageService = imageService;
-        this.userMapper = userMapper;
-    }
     @Override
     public void register(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
@@ -60,10 +52,11 @@ public class AuthServiceImpl  implements AuthService {
                 .accountStatus(AccountStatus.ENABLED)
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .build();
-        // System.out.println("UserDto: " + userDto); // Debugging
-        User user = userMapper.toUser(userDto);
-        // System.out.println("User: " + user); // Debugging
-        userRepository.save(user);
+         System.out.println("UserDto: " + userDto); // Debugging
+        UserEntity userEntity = userMapper.toUserEntity(userDto);
+         System.out.println("User: " + userEntity); // Debugging
+        userRepository.save(userEntity);
+
     }
 
     @Override
@@ -96,9 +89,9 @@ public class AuthServiceImpl  implements AuthService {
 
     @Override
     public void forgotPassword(String email) {
-        User user = userRepository.findByEmail(email)
+        UserEntity userEntity = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
-        String resetToken = jwtService.generateResetToken(user);
+        String resetToken = jwtService.generateResetToken(userEntity);
 //        String resetLink = "http://gotruck.com/reset-password?token=" + resetToken;
         String resetLink = "http://localhost:9091/api/v1/auth/reset-password/" + resetToken;
         String emailBody= "Hello,\n\n" +
@@ -114,10 +107,10 @@ public class AuthServiceImpl  implements AuthService {
     public void resetPassword(String token, ResetPasswordRequest request) {
         try {
             Long userId = jwtService.extractUserId(token);
-            User user = userRepository.findById(userId)
+            UserEntity userEntity = userRepository.findById(userId)
                     .orElseThrow(UserNotFoundException::new);
-            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-            userRepository.save(user);
+            userEntity.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(userEntity);
         } catch (JwtException e) {
             throw new UnauthorizedException("Invalid or expired token");
         }
@@ -128,13 +121,13 @@ public class AuthServiceImpl  implements AuthService {
         String username = jwtService.extractUserName(refreshToken);
 
         // Find the user in the database using the username
-        User user = userRepository.findByEmail(username)
+        UserEntity userEntity = userRepository.findByEmail(username)
                 .orElseThrow(UserNotFoundException::new);
 
-        if (!jwtService.validateToken(refreshToken, user)) {
+        if (!jwtService.validateToken(refreshToken, userEntity)) {
             throw new UnauthorizedException("Invalid refresh token");
         }
-        String newAccessToken = jwtService.generateAccessToken(user);
+        String newAccessToken = jwtService.generateAccessToken(userEntity);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         jwtAuthResponse.setAccessToken(newAccessToken);

@@ -1,7 +1,7 @@
 package com.gotruck.shipperservice.service.Impl;
 
 import com.gotruck.shipperservice.exceptions.UnauthorizedException;
-import com.gotruck.shipperservice.model.User;
+import com.gotruck.shipperservice.dao.entity.UserEntity;
 import com.gotruck.shipperservice.model.enums.AccountStatus;
 import com.gotruck.shipperservice.service.JwtService;
 import io.jsonwebtoken.Claims;
@@ -63,7 +63,7 @@ public class JwtServiceImpl implements JwtService {
     private String generateToken(UserDetails userDetails, long expirationTime) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
-                .claim("userId", ((User) userDetails).getId())
+                .claim("userId", ((UserEntity) userDetails).getId())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(secretKey)
@@ -71,16 +71,16 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private boolean isAuthorized(UserDetails userDetails) {
-        User user = (User) userDetails;
+        UserEntity userEntity = (UserEntity) userDetails;
         // Check if the user account is enabled
-        return user.getAccountStatus().equals(AccountStatus.ENABLED);
+        return userEntity.getAccountStatus().equals(AccountStatus.ENABLED);
     }
 
     @Override
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUserName(token);
         final Long userId = extractUserId(token);
-        return (username.equals(userDetails.getUsername()) && userId.equals(((User) userDetails).getId()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && userId.equals(((UserEntity) userDetails).getId()) && !isTokenExpired(token));
     }
 
     public Long extractUserId(String token) {

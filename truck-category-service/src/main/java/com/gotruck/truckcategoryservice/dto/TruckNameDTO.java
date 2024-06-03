@@ -4,10 +4,12 @@ import jakarta.persistence.Column;
 import lombok.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class TruckNameDTO {
+
     private Long id;
+
     @Column(nullable = false) // Enforce uniqueness and not null
     private String name;
 }

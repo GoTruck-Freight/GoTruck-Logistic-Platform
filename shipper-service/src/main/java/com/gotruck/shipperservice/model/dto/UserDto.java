@@ -1,4 +1,5 @@
-package com.gotruck.shipperservice.model;
+package com.gotruck.shipperservice.model.dto;
+
 
 import com.gotruck.shipperservice.model.enums.AccountStatus;
 import jakarta.persistence.*;
@@ -9,23 +10,17 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
+import java.util.Objects;
 
 @Data
+@ToString(exclude = {"password"})
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "Shipper-user")
+public class UserDto {
 
-public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Company name is required")
@@ -54,13 +49,10 @@ public class User implements UserDetails {
             message = "Invalid phone number format. Use only digits.")
     private String phoneNumber;
 
-    @Column(length = 1000)
     private String image;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "account_status")
-    @Builder.Default
-    private AccountStatus accountStatus = AccountStatus.ENABLED;
+    private AccountStatus accountStatus;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -71,33 +63,20 @@ public class User implements UserDetails {
     private Date updatedAt;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDto that = (UserDto) o;
+        return Objects.equals(companyName, that.companyName) &&
+                Objects.equals(contactName, that.contactName) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(phoneNumber, that.phoneNumber) &&
+                Objects.equals(image, that.image) &&
+                accountStatus == that.accountStatus;
     }
-
     @Override
-    public String getUsername() {
-        return email;
+    public int hashCode() {
+        return Objects.hash(companyName, contactName, email, password, phoneNumber, accountStatus, image);
     }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
 }

@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -42,7 +44,7 @@ class TruckCategoryControllerIntegrationTests {
         testCategoryDTO = new TruckCategoryDTO();
         testCategoryDTO.setId(1L);
         testCategoryDTO.setDescription("Test Category");
-        testCategoryDTO.setMaxLoadCapacity(1000.0);
+        testCategoryDTO.setMaxLoadCapacity(BigDecimal.valueOf(1000));
         // Set other properties as needed
     }
 

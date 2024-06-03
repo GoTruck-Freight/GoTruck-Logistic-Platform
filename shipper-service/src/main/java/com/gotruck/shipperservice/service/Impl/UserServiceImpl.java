@@ -1,16 +1,16 @@
 package com.gotruck.shipperservice.service.Impl;
 
-import com.gotruck.shipperservice.dto.UserDto;
-import com.gotruck.shipperservice.dto.UserProfile;
+import com.gotruck.shipperservice.model.dto.UserDto;
+import com.gotruck.shipperservice.model.dto.UserProfile;
 import com.gotruck.shipperservice.exceptions.UnauthorizedException;
 import com.gotruck.shipperservice.exceptions.UserNotFoundException;
 import com.gotruck.shipperservice.mapper.UserMapper;
-import com.gotruck.shipperservice.model.User;
+import com.gotruck.shipperservice.dao.entity.UserEntity;
 import com.gotruck.shipperservice.model.enums.AccountStatus;
-import com.gotruck.shipperservice.repository.UserRepository;
+import com.gotruck.shipperservice.dao.repository.UserRepository;
 import com.gotruck.shipperservice.service.UserService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
@@ -25,16 +25,11 @@ import java.util.stream.Collectors;
 
 @EnableWebSecurity
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper){
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -44,13 +39,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        UserEntity userEntity = userRepository.findByEmail(email)
                  .orElseThrow(UserNotFoundException::new);
 
         // Create a UserDetails object using the user’s information
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
+                userEntity.getEmail(),
+                userEntity.getPassword(),
                 new ArrayList<>()); // No authorities for now
     }
     @Override
@@ -58,9 +53,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new UnauthorizedException("User is not authenticated");
         }
-        User user = userRepository.findByEmail(authentication.getName())
+        UserEntity userEntity = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        return userMapper.toUserProfile(user);
+        return userMapper.toUserProfile(userEntity);
     }
 
     @Override
@@ -85,12 +80,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new UnauthorizedException("User is not authenticated");
         }
         String userEmail = authentication.getName();
-        User user = userRepository.findByEmail(userEmail)
+        UserEntity userEntity = userRepository.findByEmail(userEmail)
                 .orElseThrow(UserNotFoundException::new);
-        UserDto userDto = userMapper.toUserDto(user);
+        UserDto userDto = userMapper.toUserDto(userEntity);
         updateUserProfile(userDto, userProfile);
-        user = userMapper.toUser(userDto);
-        userRepository.save(user);
+        userEntity = userMapper.toUserEntity(userDto);
+        userRepository.save(userEntity);
 
         return ResponseEntity.ok().body("Profile updated successfully");
     }
@@ -118,9 +113,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void updateAccountStatus(Long id, AccountStatus newStatus) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        user.setAccountStatus(newStatus);
-        userRepository.save(user);
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        userEntity.setAccountStatus(newStatus);
+        userRepository.save(userEntity);
     }
 
 }

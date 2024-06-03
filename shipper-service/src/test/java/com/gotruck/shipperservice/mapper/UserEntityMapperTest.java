@@ -1,7 +1,7 @@
 package com.gotruck.shipperservice.mapper;
 
-import com.gotruck.shipperservice.dto.UserDto;
-import com.gotruck.shipperservice.model.User;
+import com.gotruck.shipperservice.model.dto.UserDto;
+import com.gotruck.shipperservice.dao.entity.UserEntity;
 import com.gotruck.shipperservice.model.enums.AccountStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-public class UserMapperTest {
+public class UserEntityMapperTest {
 
     @Autowired
     private UserMapper userMapper;
@@ -27,15 +27,15 @@ public class UserMapperTest {
         userDto.setImage("/images/profileImages/default-shipper-user.jpeg");
         userDto.setAccountStatus(AccountStatus.ENABLED);
 
-        User user = userMapper.toUser(userDto);
+        UserEntity userEntity = userMapper.toUserEntity(userDto);
 
-        assertNotNull(user);
-        assertEquals("Yeni MMC", user.getCompanyName());
-        assertEquals("Yeni User", user.getContactName());
-        assertEquals("TestShipperOrder@gmail.com", user.getEmail());
-        assertEquals("Test_Shipper_Order_16", user.getPassword());
-        assertEquals("05566655", user.getPhoneNumber());
-        assertEquals("/images/profileImages/default-shipper-user.jpeg", user.getImage());
-        assertEquals(AccountStatus.ENABLED, user.getAccountStatus());
+        assertNotNull(userEntity);
+        assertEquals("Yeni MMC", userEntity.getCompanyName());
+        assertEquals("Yeni User", userEntity.getContactName());
+        assertEquals("TestShipperOrder@gmail.com", userEntity.getEmail());
+        assertEquals("Test_Shipper_Order_16", userEntity.getPassword());
+        assertEquals("05566655", userEntity.getPhoneNumber());
+        assertEquals("/images/profileImages/default-shipper-user.jpeg", userEntity.getImage());
+        assertEquals(AccountStatus.ENABLED, userEntity.getAccountStatus());
     }
 }

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TruckCategoryMapperTest {
@@ -26,21 +28,13 @@ class TruckCategoryMapperTest {
 //        Mock data
         truckCategoryDTO = new TruckCategoryDTO();
         truckCategoryDTO.setDescription("Truck Category 1");
-        truckCategoryDTO.setMaxLoadCapacity(1000.0);
-        truckCategoryDTO.setCargoAreaWidth(2.5);
-        truckCategoryDTO.setCargoAreaLength(6.0);
-        truckCategoryDTO.setCargoAreaHeight(2.0);
-        truckCategoryDTO.setCargoCubicVolume(30.0);
+        truckCategoryDTO.setMaxLoadCapacity(BigDecimal.valueOf(1000.0));
+        truckCategoryDTO.setCargoAreaWidth(BigDecimal.valueOf(2.5));
+        truckCategoryDTO.setCargoAreaLength(BigDecimal.valueOf(6.0));
+        truckCategoryDTO.setCargoAreaHeight(BigDecimal.valueOf(2.0));
+        truckCategoryDTO.setCargoCubicVolume(BigDecimal.valueOf(30.0));
         truckCategoryDTO.setTruckNameId(1L);
 
-        truckCategory = new TruckCategory();
-        truckCategory.setDescription("Truck Category 1");
-        truckCategory.setMaxLoadCapacity(1000.0);
-        truckCategory.setCargoAreaWidth(2.5);
-        truckCategory.setCargoAreaLength(6.0);
-        truckCategory.setCargoAreaHeight(2.0);
-        truckCategory.setCargoCubicVolume(30.0);
-        truckCategory.setTruckNameId(1L);
     }
 
     @Test

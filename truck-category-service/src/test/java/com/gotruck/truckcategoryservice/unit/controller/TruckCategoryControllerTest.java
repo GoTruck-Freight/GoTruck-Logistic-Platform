@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import static org.mockito.Mockito.*;
@@ -39,11 +40,11 @@ class TruckCategoryControllerTest {
         testTruckCategory = new TruckCategoryDTO();
         testTruckCategory.setId(1L);
         testTruckCategory.setDescription("Test Truck Category");
-        testTruckCategory.setMaxLoadCapacity(1000.0);
-        testTruckCategory.setCargoAreaWidth(3.5);
-        testTruckCategory.setCargoAreaLength(8.0);
-        testTruckCategory.setCargoAreaHeight(2.5);
-        testTruckCategory.setCargoCubicVolume(70.0);
+        testTruckCategory.setMaxLoadCapacity(new BigDecimal("1000.0"));
+        testTruckCategory.setCargoAreaWidth(new BigDecimal("3.5"));
+        testTruckCategory.setCargoAreaLength(new BigDecimal("8.0"));
+        testTruckCategory.setCargoAreaHeight(new BigDecimal("2.5"));
+        testTruckCategory.setCargoCubicVolume(new BigDecimal("70.0"));
         testTruckCategory.setTruckNameId(1L);
     }
 

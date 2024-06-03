@@ -1,10 +1,10 @@
 package com.gotruck.shipperservice.controller;
 
-import com.gotruck.shipperservice.dto.UserDto;
-import com.gotruck.shipperservice.dto.UserProfile;
-import com.gotruck.shipperservice.model.User;
+import com.gotruck.shipperservice.model.dto.UserDto;
+import com.gotruck.shipperservice.model.dto.UserProfile;
+import com.gotruck.shipperservice.dao.entity.UserEntity;
 import com.gotruck.shipperservice.model.enums.AccountStatus;
-import com.gotruck.shipperservice.repository.UserRepository;
+import com.gotruck.shipperservice.dao.repository.UserRepository;
 import com.gotruck.shipperservice.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,16 +54,16 @@ public class UserController {
     }
 
     @GetMapping("/company/{company_name}")
-    public ResponseEntity<List<User>> getUsersByCompanyName(@PathVariable("company_name") String companyName) {
-        List<User> users = userRepository.findByCompanyNameIgnoreCaseContaining(companyName);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public ResponseEntity<List<UserEntity>> getUsersByCompanyName(@PathVariable("company_name") String companyName) {
+        List<UserEntity> userEntities = userRepository.findByCompanyNameIgnoreCaseContaining(companyName);
+        return new ResponseEntity<>(userEntities, HttpStatus.OK);
     }
 
     @GetMapping("/status/{account_status}")
-    public ResponseEntity<List<User>> getUsersByAccountStatus(@PathVariable("account_status") String accountStatus) {
+    public ResponseEntity<List<UserEntity>> getUsersByAccountStatus(@PathVariable("account_status") String accountStatus) {
         AccountStatus status = AccountStatus.valueOf(accountStatus.toUpperCase());
-        List<User> users = userRepository.findByAccountStatus(status);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        List<UserEntity> userEntities = userRepository.findByAccountStatus(status);
+        return new ResponseEntity<>(userEntities, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

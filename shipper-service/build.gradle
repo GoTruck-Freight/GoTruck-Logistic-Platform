@@ -39,7 +39,7 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 
-//	jwt
+    //	jwt
 	implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
 	implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
 	implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
@@ -47,7 +47,7 @@ dependencies {
 	implementation "org.apache.commons:commons-lang3:${apacheCommonsVersion}"
 	implementation "jakarta.ws.rs:jakarta.ws.rs-api:${jakartaWsRsApiVersion}"
 
-//	mapstruct
+    //	mapstruct
 	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 

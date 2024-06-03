@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: truck-names-01
+      author: Shafag Abdullayeva
+      remarks: "Creating the truck_names table for storing different truck names."
+      changes:
+        - createTable:
+            tableName: truck_names
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false

@@ -1,4 +1,4 @@
-package com.gotruck.shipperservice.dto;
+package com.gotruck.shipperservice.model.dto.request;
 
 import com.gotruck.shipperservice.model.enums.AccountStatus;
 import jakarta.persistence.EnumType;
@@ -9,11 +9,14 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.Objects;
+
 
 @Data
+@ToString(exclude = {"password"})
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 
 public class RegisterRequest {
 
@@ -52,16 +55,20 @@ public class RegisterRequest {
     private String image;
 
     @Override
-    public String toString() {
-        return new StringBuilder("RegisterRequest{")
-                .append("companyName='").append(companyName).append('\'')
-                .append(", contactName='").append(contactName).append('\'')
-                .append(", email='").append(email).append('\'')
-                .append(", password='").append("*****").append('\'')
-                .append(", phoneNumber='").append(phoneNumber).append('\'')
-                .append(", image='").append(image).append('\'')
-                .append(", accountStatus=").append(accountStatus).append('\'')
-                .append('}').toString();
-
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegisterRequest that = (RegisterRequest) o;
+        return Objects.equals(companyName, that.companyName) &&
+                Objects.equals(contactName, that.contactName) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(phoneNumber, that.phoneNumber) &&
+                Objects.equals(image, that.image) &&
+                accountStatus == that.accountStatus;
+}
+    @Override
+    public int hashCode() {
+        return Objects.hash(companyName, contactName, email, password, phoneNumber, accountStatus, image);
     }
 }

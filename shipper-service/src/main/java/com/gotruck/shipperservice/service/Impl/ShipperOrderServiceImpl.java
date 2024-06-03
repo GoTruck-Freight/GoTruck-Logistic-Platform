@@ -5,6 +5,7 @@ import com.gotruck.shipperservice.client.OrderClient;
 import com.gotruck.shipperservice.exceptions.UnauthorizedException;
 import com.gotruck.shipperservice.service.JwtService;
 import com.gotruck.shipperservice.service.ShipperOrderService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +13,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ShipperOrderServiceImpl implements ShipperOrderService {
+
     private final OrderClient orderClient;
     private final JwtService jwtService;
-
-    @Autowired
-    public ShipperOrderServiceImpl(OrderClient orderClient, JwtService jwtService) {
-        this.orderClient = orderClient;
-        this.jwtService = jwtService;
-    }
 
     @Override
     public List<AllOrderDTO> getAllOrders(String token) {

@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: truck-category-01
+      author: Shafag Abdullayeva
+      remarks: "Creating the truck_categories table for storing truck category information."
+      changes:
+        - createTable:
+            tableName: truck_categories
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: max_load_capacity
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cargo_area_width
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cargo_area_length
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cargo_area_height
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cargo_cubic_volume
+                  type: DECIMAL(10,2)
+              - column:
+                  name: truck_name_id
+                  type: BIGINT

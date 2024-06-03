@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class TruckCategoryServiceImplUnitTests {
         testCategoryDTO = new TruckCategoryDTO();
         testCategoryDTO.setId(1L);
         testCategoryDTO.setDescription("Test Category");
-        testCategoryDTO.setMaxLoadCapacity(1000.0);
+        testCategoryDTO.setMaxLoadCapacity(BigDecimal.valueOf(1000.0));
         // Set other properties as needed
     }
 
