@@ -11,8 +11,12 @@ import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
 import com.gotruck.truckcategoryservice.service.TruckCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -70,27 +74,35 @@ public class TruckCategoryServiceImpl implements TruckCategoryService {
     }
 
     @Override
-    public TruckCategoryDTO updateTruckCategory(Long id,TruckCategoryDTO truckCategoryDTO) {
-        Optional<TruckCategory> truckCategoryOptional = truckCategoryRepository.findById(truckCategoryDTO.getId());
-        if (!truckCategoryOptional.isPresent()) {
-            throw new TruckCategoryNotFoundException("Truck category not found with id: " + truckCategoryDTO.getId());
-        }
+    public TruckCategoryDTO updateTruckCategory(Long id, TruckCategoryDTO truckCategoryDTO) {
+        TruckCategory existingTruckCategory = truckCategoryRepository.findById(id)
+                .orElseThrow(() -> new TruckCategoryNotFoundException("Truck category not found with id: " + id));
+        truckCategoryMapper.updateTruckCategoryFromDto(truckCategoryDTO, existingTruckCategory);
+        existingTruckCategory = truckCategoryRepository.save(existingTruckCategory);
+        return truckCategoryMapper.truckCategoryToDto(existingTruckCategory);
+    }
 
-        TruckCategory existingTruckCategory = truckCategoryOptional.get();
 
-        // Update the fields of the existing truck category
-        existingTruckCategory.setDescription(truckCategoryDTO.getDescription());
-        existingTruckCategory.setMaxLoadCapacity(truckCategoryDTO.getMaxLoadCapacity());
-        existingTruckCategory.setCargoAreaWidth(truckCategoryDTO.getCargoAreaWidth());
-        existingTruckCategory.setCargoAreaLength(truckCategoryDTO.getCargoAreaLength());
-        existingTruckCategory.setCargoAreaHeight(truckCategoryDTO.getCargoAreaHeight());
-        existingTruckCategory.setCargoCubicVolume(truckCategoryDTO.getCargoCubicVolume());
-        existingTruckCategory.setTruckNameId(truckCategoryDTO.getTruckNameId());
+    @Override
+    public TruckCategoryDTO patchTruckCategory(Long id, Map<String, Object> fields) {
+        TruckCategory existingTruckCategory = truckCategoryRepository.findById(id)
+                .orElseThrow(() -> new TruckCategoryNotFoundException("Truck category not found with id: " + id));
 
-        // Save the updated truck category
+        fields.forEach((k, v) -> {
+            Field field = ReflectionUtils.findField(TruckCategory.class, k);
+            if (field != null) {
+                field.setAccessible(true);
+                Object value = v;
+                if (field.getType().equals(Long.class) && v instanceof Integer) {
+                    value = Long.valueOf((Integer) v);
+                } else if (field.getType().equals(BigDecimal.class) && v instanceof String) {
+                    value = new BigDecimal((String) v);
+                }
+                ReflectionUtils.setField(field, existingTruckCategory, value);
+            }
+        });
+
         TruckCategory updatedTruckCategory = truckCategoryRepository.save(existingTruckCategory);
-
-        // Return the updated truck category DTO
         return truckCategoryMapper.truckCategoryToDto(updatedTruckCategory);
     }
 

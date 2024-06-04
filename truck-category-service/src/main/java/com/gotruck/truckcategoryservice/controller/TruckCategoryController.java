@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -42,6 +43,11 @@ public class TruckCategoryController {
     public TruckCategoryDTO updateTruckCategory(
             @PathVariable Long id, @Valid @RequestBody TruckCategoryDTO truckCategoryDTO) {
             return truckCategoryService.updateTruckCategory(id, truckCategoryDTO);
+    }
+
+    @PatchMapping("/{id}")
+    public TruckCategoryDTO patchTruckCategory(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
+        return truckCategoryService.patchTruckCategory(id, fields);
     }
 
     @DeleteMapping("/{id}")
