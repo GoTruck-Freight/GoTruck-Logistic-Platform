@@ -6,14 +6,17 @@ import com.gotruck.common.model.enums.order.OrderType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface OrderService {
-    List<AllOrderDTO> getAllOrders();
-    AllOrderDTO findOrderById(Long orderId);
-    List<AllOrderDTO> findByOrderType(OrderType orderType);
-    List<AllOrderDTO> findByOrderStatus(OrderStatus orderStatus);
-    NewOrderDTO createNewOrder(NewOrderDTO newOrderDTO);
-    NewOrderDTO updateOrder(Long orderId, NewOrderDTO newOrderDTO);
+    List<OrderDTO> getAllOrders();
+    OrderDTO findOrderById(Long orderId);
+    List<OrderDTO> findByOrderType(OrderType orderType);
+    OrderDTO createNewOrder(OrderDTO OrderDTO);
+    OrderDTO updateOrder(Long orderId, OrderDTO OrderDTO);
+
+    OrderDTO patchOrder(Long orderId, Map<String, Object> fields);
+
     void deleteOrder(Long orderId);
 }

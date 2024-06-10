@@ -1,10 +1,10 @@
 package com.gotruck.truckcategoryservice.service.Impl;
 
-import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
+import com.gotruck.truckcategoryservice.model.dto.TruckNameDTO;
 import com.gotruck.truckcategoryservice.exceptions.TruckNameNotFoundException;
 import com.gotruck.truckcategoryservice.mapper.TruckNameMapper;
-import com.gotruck.truckcategoryservice.model.TruckName;
-import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
+import com.gotruck.truckcategoryservice.dao.entity.TruckName;
+import com.gotruck.truckcategoryservice.dao.repository.TruckNameRepository;
 import com.gotruck.truckcategoryservice.service.TruckNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,13 +1,13 @@
 package com.gotruck.truckcategoryservice.unit.service;
 
-import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
+import com.gotruck.truckcategoryservice.model.dto.TruckCategoryDTO;
 import com.gotruck.truckcategoryservice.exceptions.TruckCategoryNotFoundException;
 import com.gotruck.truckcategoryservice.exceptions.TruckNameNotFoundException;
 import com.gotruck.truckcategoryservice.mapper.TruckCategoryMapper;
-import com.gotruck.truckcategoryservice.model.TruckCategory;
-import com.gotruck.truckcategoryservice.model.TruckName;
-import com.gotruck.truckcategoryservice.repository.TruckCategoryRepository;
-import com.gotruck.truckcategoryservice.repository.TruckNameRepository;
+import com.gotruck.truckcategoryservice.dao.entity.TruckCategory;
+import com.gotruck.truckcategoryservice.dao.entity.TruckName;
+import com.gotruck.truckcategoryservice.dao.repository.TruckCategoryRepository;
+import com.gotruck.truckcategoryservice.dao.repository.TruckNameRepository;
 import com.gotruck.truckcategoryservice.service.Impl.TruckCategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

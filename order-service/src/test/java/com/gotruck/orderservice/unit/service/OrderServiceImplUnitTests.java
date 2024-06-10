@@ -4,7 +4,7 @@
 //import com.gotruck.orderservice.exceptions.OrderNotFoundException;
 //import com.gotruck.orderservice.mapper.OrderMapper;
 //import com.gotruck.orderservice.model.Order;
-//import com.gotruck.orderservice.repository.OrderRepository;
+//import com.gotruck.orderservice.dao.repository.OrderRepository;
 //import com.gotruck.orderservice.service.Impl.OrderServiceImpl;
 //import com.gotruck.truckcategoryservice.model.TruckName;
 //import com.gotruck.truckcategoryservice.repository.TruckNameRepository;

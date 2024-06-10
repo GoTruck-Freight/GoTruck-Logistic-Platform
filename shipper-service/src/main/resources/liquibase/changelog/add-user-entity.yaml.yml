@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-shipper_users
+      author: Shafag Abdullayeva
+      remarks: "Creating the shipper_users table for storing user information."
+      changes:
+        - createTable:
+            tableName: shipper_users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: company_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contact_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image
+                  type: varchar(1000)
+              - column:
+                  name: account_status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false

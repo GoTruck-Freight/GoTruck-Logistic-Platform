@@ -5,11 +5,6 @@ spring:
   config:
     import: env.properties
 
-  # MVC configuration
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
   # Database configuration
   datasource:
     url: ${DB_URL}
@@ -26,39 +21,18 @@ spring:
 
   # Liquibase configuration
   liquibase:
-    change-log: classpath:liquibase/changelog-master.yml
+    change-log: liquibase/changelog-master.yml
 
 # Server configuration
 server:
   port: ${SERVER_PORT}
-
-# Application specific configurations
-application:
-  # Interceptor configuration
-  interceptor:
-    common-request:
-      exclude-path-patterns: /swagger**/**,/**/api-docs,/error,/favicon.ico
-
-  # Swagger configuration
-  swagger:
-    base-package: "com.gotruck.truckcategoryservice.controller"
-    paths: "/.*"
-    apiInfo:
-      version: 1.0
-      title: "Truck Category Rest API"
-      description: "Spring Boot REST API for Truck Category"
-
-  # Client configuration
-  client:
-    account:
-      url: http://localhost:9080
 
 # Eureka client configuration
 eureka:
   client:
     registerWithEureka: true
     serviceUrl:
-      defaultZone: ${EUREKA_SERVER:http://discovery-server:8761/eureka/}
+      defaultZone: http://localhost:8761/eureka/
     healthcheck:
       enabled: true
 
@@ -97,10 +71,4 @@ management:
 logging:
   level:
     com.gotruck: DEBUG
-    springfox: DEBUG
-
-# Common swagger configuration
-common:
-  swagger:
-    enabled: true
 

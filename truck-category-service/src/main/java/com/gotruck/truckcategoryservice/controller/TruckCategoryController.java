@@ -1,6 +1,6 @@
 package com.gotruck.truckcategoryservice.controller;
 
-import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
+import com.gotruck.truckcategoryservice.model.dto.TruckCategoryDTO;
 import com.gotruck.truckcategoryservice.service.TruckCategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

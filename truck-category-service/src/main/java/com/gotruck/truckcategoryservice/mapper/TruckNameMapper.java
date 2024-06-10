@@ -1,7 +1,7 @@
 package com.gotruck.truckcategoryservice.mapper;
 
-import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
-import com.gotruck.truckcategoryservice.model.TruckName;
+import com.gotruck.truckcategoryservice.model.dto.TruckNameDTO;
+import com.gotruck.truckcategoryservice.dao.entity.TruckName;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;

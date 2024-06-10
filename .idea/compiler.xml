@@ -21,15 +21,19 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="com.gotruck.order-service.common" target="17" />
       <module name="com.gotruck.order-service.common-libs" target="17" />
       <module name="com.gotruck.order-service.common-libs.main" target="17" />
       <module name="com.gotruck.order-service.common-libs.test" target="17" />
+      <module name="com.gotruck.order-service.common.main" target="17" />
+      <module name="com.gotruck.order-service.common.test" target="17" />
+      <module name="common" target="17" />
       <module name="common-libs" target="17" />
       <module name="common-libs.main" target="17" />
       <module name="common-libs.test" target="17" />
+      <module name="common.main" target="17" />
+      <module name="common.test" target="17" />
       <module name="config-server" target="17" />
-      <module name="order-service.common.main" target="17" />
-      <module name="order-service.common.test" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

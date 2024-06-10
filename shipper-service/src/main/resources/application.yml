@@ -1,14 +1,30 @@
+# Application and Environment Configuration
 spring:
-  config:
-    import: env.properties
   application:
     name: shipper-service
+  config:
+    import: env.properties
+
+# Database Configuration
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: ${DB_DRIVER_CLASS}
 
+# JPA and Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+# Liquibase Configuration
+  liquibase:
+    change-log: classpath:liquibase/changelog-master.yml
+
+# Mail Configuration
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
@@ -21,46 +37,39 @@ spring:
           starttls:
             enable: ${MAIL_SMTP_STARTTLS_ENABLE}
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-#      hibernate:
-#        temp:
-#          use_jdbc_metadata_defaults: false #to disable contextual lob creation when application starts.
-      database-platform: org.hibernate.dialect.PostgreSQLDialect
-
+# Jackson Configuration
   jackson:
-    date-format: dd-MM-yyyy
+    date-format: dd-MM-yyyy HH:mm:ss
     default-property-inclusion: non_null
 
-
+# Server Configuration
 server:
   port: ${SERVER_PORT}
 
-upload:
-  dir: ${UPLOAD_DIR}
-
-default:
-  image:
-    path: ${DEFAULT_IMAGE_PATH}
-
+# Security Configuration
 security:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
 
-#this is for eureka client
+# Upload Configuration
+upload:
+  dir: ${UPLOAD_DIR}
+
+# Default Image Configuration
+default:
+  image:
+    path: ${DEFAULT_IMAGE_PATH}
+
+# Eureka Client Configuration
 eureka:
   client:
     registerWithEureka: true
     serviceUrl:
-#      defaultZone: http://localhost:8761/eureka/
-       defaultZone: ${EUREKA_SERVER:http://discovery-server:8761/eureka/}
+      defaultZone: http://localhost:8761/eureka/
     healthcheck:
       enabled: true
 
-#this is for actuator
+# Actuator Configuration
 management:
   tracing:
     sampling:
@@ -72,7 +81,6 @@ management:
     web:
       exposure:
         include: "*"
-#        include: health, metrics, prometheus
     health:
       show-details: always
   info:
@@ -83,9 +91,7 @@ management:
       prometheus:
         enabled: true
 
-#logging:
-#  config: classpath:log4j2-spring.xml
-
+# Feign Client Configuration
 feign:
   client:
     config:
@@ -94,3 +100,6 @@ feign:
         readTimeout: 5000  #5 seconds
         loggerLevel: basic #basic, none, full
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

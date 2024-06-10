@@ -1,7 +1,6 @@
 package com.gotruck.shipperservice.controller;
 
-import com.gotruck.common.dto.order.AllOrderDTO;
-import com.gotruck.common.dto.order.NewOrderDTO;
+import com.gotruck.common.dto.order.OrderDTO;
 import com.gotruck.shipperservice.service.ShipperOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,34 +23,34 @@ public class ShipperOrderController {
     }
 
     @GetMapping()
-    public List<AllOrderDTO> geAllOrders(@RequestHeader("Authorization") String token) {
+    public List<OrderDTO> geAllOrders(@RequestHeader("Authorization") String token) {
         return shipperOrderService.getAllOrders(token);
     }
 
     @GetMapping("/{id}")
-    public AllOrderDTO findOrderById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+    public OrderDTO findOrderById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         return shipperOrderService.findOrderById(id, token);
     }
 
     @GetMapping("/type/{orderType}")
-    public List<AllOrderDTO> findByOrderType(@PathVariable String orderType, @RequestHeader("Authorization") String token) {
+    public List<OrderDTO> findByOrderType(@PathVariable String orderType, @RequestHeader("Authorization") String token) {
         return shipperOrderService.findByOrderType(orderType, token);
     }
 
     @GetMapping("/status/{orderStatus}")
-    public List<AllOrderDTO> findByOrderStatus(@PathVariable String orderStatus, @RequestHeader("Authorization") String token) {
+    public List<OrderDTO> findByOrderStatus(@PathVariable String orderStatus, @RequestHeader("Authorization") String token) {
         return shipperOrderService.findByOrderStatus(orderStatus, token);
     }
 
     @PostMapping()
     @ResponseStatus(CREATED)
-    public NewOrderDTO createOrder(@RequestBody NewOrderDTO newOrderRequestDTO, @RequestHeader("Authorization") String token) {
-        return shipperOrderService.createOrder(newOrderRequestDTO, token);
+    public OrderDTO createOrder(@RequestBody OrderDTO orderRequestDTO, @RequestHeader("Authorization") String token) {
+        return shipperOrderService.createOrder(orderRequestDTO, token);
     }
 
     @PutMapping("/{id}")
-    public NewOrderDTO updateOrder(@PathVariable Long id, @RequestBody NewOrderDTO newOrderDTO,@RequestHeader("Authorization") String token) {
-        return shipperOrderService.updateOrder(id, newOrderDTO, token);
+    public OrderDTO updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderDTO,@RequestHeader("Authorization") String token) {
+        return shipperOrderService.updateOrder(id, orderDTO, token);
     }
 
     @DeleteMapping("/{id}")

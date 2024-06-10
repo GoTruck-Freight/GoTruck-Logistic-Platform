@@ -1,8 +1,8 @@
 package com.gotruck.truckcategoryservice.unit.mapper;
 
-import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
+import com.gotruck.truckcategoryservice.model.dto.TruckCategoryDTO;
 import com.gotruck.truckcategoryservice.mapper.TruckCategoryMapper;
-import com.gotruck.truckcategoryservice.model.TruckCategory;
+import com.gotruck.truckcategoryservice.dao.entity.TruckCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

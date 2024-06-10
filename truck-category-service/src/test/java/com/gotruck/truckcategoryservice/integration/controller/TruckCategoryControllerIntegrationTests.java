@@ -2,7 +2,7 @@ package com.gotruck.truckcategoryservice.integration.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gotruck.truckcategoryservice.dto.TruckCategoryDTO;
+import com.gotruck.truckcategoryservice.model.dto.TruckCategoryDTO;
 import com.gotruck.truckcategoryservice.service.TruckCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

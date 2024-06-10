@@ -6,7 +6,4 @@ public class TruckNameNotFoundException extends RuntimeException{
         super(message);
     }
 
-    public TruckNameNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

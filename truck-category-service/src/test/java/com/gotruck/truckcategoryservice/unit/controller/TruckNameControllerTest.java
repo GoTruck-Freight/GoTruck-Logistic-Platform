@@ -2,7 +2,7 @@ package com.gotruck.truckcategoryservice.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotruck.truckcategoryservice.controller.TruckNameController;
-import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
+import com.gotruck.truckcategoryservice.model.dto.TruckNameDTO;
 import com.gotruck.truckcategoryservice.service.TruckNameService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

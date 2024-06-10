@@ -1,109 +1,102 @@
 package com.gotruck.orderservice.service.Impl;
 
-import com.gotruck.common.dto.order.*;
+import com.gotruck.common.dto.order.OrderDTO;
 import com.gotruck.common.dto.truckCategory.TruckNameDTO;
-import com.gotruck.common.model.enums.order.OrderStatus;
 import com.gotruck.common.model.enums.order.OrderType;
 import com.gotruck.orderservice.client.TruckNameClient;
 import com.gotruck.orderservice.exceptions.OrderNotFoundException;
 import com.gotruck.orderservice.mapper.OrderMapper;
-import com.gotruck.orderservice.model.Order;
-import com.gotruck.orderservice.repository.OrderRepository;
+import com.gotruck.orderservice.dao.entity.OrderEntity;
+import com.gotruck.orderservice.dao.repository.OrderRepository;
 import com.gotruck.orderservice.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final TruckNameClient truckNameClient;
 
-    @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, TruckNameClient truckNameClient) {
-        this.orderRepository = orderRepository;
-        this.orderMapper = orderMapper;
-        this.truckNameClient = truckNameClient;
-    }
-
     @Override
-    public List<AllOrderDTO> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
+    public List<OrderDTO> getAllOrders() {
+        List<OrderEntity> orders = orderRepository.findAll();
         return orders.stream()
-                .map(orderMapper::toAllOrderDTO)
+                .map(orderMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AllOrderDTO findOrderById(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+    public OrderDTO findOrderById(Long orderId) {
+        OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
-        AllOrderDTO allOrderDTO = orderMapper.toAllOrderDTO(order);
-        orderMapper.mapOrderToAllOrderDTO(order, allOrderDTO);
-        return allOrderDTO;
+        return orderMapper.toDTO(order);
     }
 
     @Override
-    public List<AllOrderDTO> findByOrderType(OrderType orderType) {
-        List<Order> orders = orderRepository.findByOrderType(orderType);
+    public List<OrderDTO> findByOrderType(OrderType orderType) {
+        List<OrderEntity> orders = orderRepository.findByOrderType(orderType);
         if (orders.isEmpty()) {
             throw new OrderNotFoundException("No orders found with order type: " + orderType);
         }
-        //  orders.forEach(order -> System.out.println("Found order: " + order)); // Debugging
         return orders.stream()
-                .map(order -> {
-                    AllOrderDTO allOrderDTO = orderMapper.toAllOrderDTO(order);
-                    orderMapper.mapOrderToAllOrderDTO(order, allOrderDTO);
-        //             System.out.println("Mapped AllOrderDTO: " + allOrderDTO); // Debugging
-                    return allOrderDTO;
-                })
+                .map(orderMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AllOrderDTO> findByOrderStatus(OrderStatus orderStatus) {
-        List<Order> orders = orderRepository.findByOrderStatus(orderStatus);
-        if (orders.isEmpty()) {
-            throw new OrderNotFoundException("No orders found with order type: " + orderStatus);
-        }
-        return orders.stream()
-                .map(order -> {
-                    AllOrderDTO allOrderDTO = orderMapper.toAllOrderDTO(order);
-                    orderMapper.mapOrderToAllOrderDTO(order, allOrderDTO);
-                    return allOrderDTO;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public NewOrderDTO createNewOrder(NewOrderDTO newOrderDTO) {
+    public OrderDTO createNewOrder(OrderDTO orderDTO) {
         // Fetch the TruckName entity
-        TruckNameDTO truckNameDTO = truckNameClient.getTruckNameById(newOrderDTO.getTruckNameId());
+        TruckNameDTO truckNameDTO = truckNameClient.getTruckNameById(orderDTO.getTruckNameId());
         if (truckNameDTO == null) {
-            throw new OrderNotFoundException("TruckName not found with id: " + newOrderDTO.getTruckNameId());
+            throw new OrderNotFoundException("TruckName not found with id: " +orderDTO.getTruckNameId());
         }
-        // Map the DTO to the Order entity
-        Order newOrder = orderMapper.toEntity(newOrderDTO);
-        newOrder.setOrderStatus(OrderStatus.ACTIVE);
-        newOrder.setTruckNameId(truckNameDTO.getId());
-        // Save the new Order entity
-        Order savedOrder = orderRepository.save(newOrder);
-        // Map the saved Order entity back to a DTO
-        return orderMapper.toNewOrderDTO(savedOrder);
+        OrderEntity orderEntity = orderMapper.toEntity(orderDTO);
+        orderEntity = orderRepository.save(orderEntity);
+        return orderMapper.toDTO(orderEntity);
     }
 
     @Override
-    public NewOrderDTO updateOrder(Long orderId, NewOrderDTO newOrderDTO) {
-        Order existingOrder = orderRepository.findById(orderId)
+    public OrderDTO updateOrder(Long orderId, OrderDTO orderDTO) {
+        OrderEntity existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
-        orderMapper.updateOrderFromDTO(newOrderDTO, existingOrder);
+        orderMapper.updateOrderFromDto(orderDTO, existingOrder);
         existingOrder = orderRepository.save(existingOrder);
-        return orderMapper.toNewOrderDTO(existingOrder);
+        return orderMapper.toDTO(existingOrder);
     }
+
+    @Override
+    public OrderDTO patchOrder(Long orderId, Map<String, Object> fields) {
+        OrderEntity existingOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
+
+        fields.forEach((k, v) -> {
+            Field field = ReflectionUtils.findField(OrderEntity.class, k);
+            if (field != null) {
+                field.setAccessible(true);
+                Object value = v;
+                if (field.getType().equals(Long.class) && v instanceof Integer) {
+                    value = Long.valueOf((Integer) v);
+                } else if (field.getType().equals(BigDecimal.class) && v instanceof String) {
+                    value = new BigDecimal((String) v);
+                }
+                ReflectionUtils.setField(field, existingOrder, value);
+            }
+        });
+
+        OrderEntity updatedOrder = orderRepository.save(existingOrder);
+        return orderMapper.toDTO(updatedOrder);
+    }
+
 
     @Override
     public void deleteOrder(Long orderId) {

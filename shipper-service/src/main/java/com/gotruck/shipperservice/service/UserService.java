@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Map;
 
 public interface  UserService {
     UserDetailsService userDetailsService();
@@ -24,7 +25,9 @@ public interface  UserService {
 //    void updateUserProfile(Long id, UserProfile userProfile);
 
     @Transactional
-    ResponseEntity<String> updateProfile(UserProfile userProfile, Authentication authentication);
+    UserProfile updateProfile(UserProfile userProfile, Authentication authentication);
+
+    UserProfile patchUserProfile(Long id, Map<String, Object> fields);
 
     @Transactional
     void delete(Long id);

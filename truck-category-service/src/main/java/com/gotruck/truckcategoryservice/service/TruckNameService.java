@@ -1,6 +1,6 @@
 package com.gotruck.truckcategoryservice.service;
 
-import com.gotruck.truckcategoryservice.dto.TruckNameDTO;
+import com.gotruck.truckcategoryservice.model.dto.TruckNameDTO;
 
 import java.util.List;
 

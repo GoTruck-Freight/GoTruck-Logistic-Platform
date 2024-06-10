@@ -10,6 +10,7 @@ logging:
 spring:
   application:
     name: api-gateway
+
   main:
     web-application-type: reactive
 #  config:
@@ -23,6 +24,10 @@ spring:
             - Path=/api/v1/truck-names/**, /api/v1/truck-categories/**
           filters:
             - StripPrefix=2
+            - name: CircuitBreaker
+              args:
+                name: truckCategoryServiceCircuitBreaker
+                fallbackUri: forward:/fallback/truckCategoryServiceFallback
 
         - id: shipper-service
           uri: lb://shipper-service
@@ -31,19 +36,28 @@ spring:
           filters:
             - StripPrefix=2
 
+            - name: CircuitBreaker
+              args:
+                name: shipperServiceCircuitBreaker
+                fallbackUri: forward:/fallback/shipperServiceFallback
+
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/api/v1/orders/**
           filters:
             - StripPrefix=2
+            - name: CircuitBreaker
+              args:
+                name: orderServiceCircuitBreaker
+                fallbackUri: forward:/fallback/orderServiceFallback
 
 #this is for eureka client
 eureka:
   client:
     registerWithEureka: true
     serviceUrl:
-      defaultZone: http://discovery-server:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
     healthcheck:
       enabled: true
 
@@ -57,3 +71,20 @@ management:
     sampling:
       probability: 1.0  # Bütün sorğular üçün tracing aktivdir
 
+#openapi:
+#  service:
+#    title: Api Gateway Doc
+#    version: 1.0.0
+#    url: http://localhost:8060 #api gateway url
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    urls:
+      - name: shipper-service
+        url: http://localhost:9091/v3/api-docs
+      - name: order-service
+        url: http://localhost:4044/v3/api-docs
+      - name: truck-category-service
+        url: http://localhost:9080/v3/api-docs

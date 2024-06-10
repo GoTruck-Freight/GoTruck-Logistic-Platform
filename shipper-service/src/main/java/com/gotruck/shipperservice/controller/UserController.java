@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -43,8 +44,14 @@ public class UserController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<?> updateProfile(@Valid @RequestBody UserProfile userProfile, Authentication authentication) {
+    public UserProfile updateProfile(@Valid @RequestBody UserProfile userProfile, Authentication authentication) {
         return userService.updateProfile(userProfile, authentication);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserProfile> patchUserProfile(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
+        UserProfile updatedUser = userService.patchUserProfile(id, fields);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping("/")

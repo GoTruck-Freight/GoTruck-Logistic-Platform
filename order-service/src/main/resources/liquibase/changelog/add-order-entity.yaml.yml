@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-orders
+      author: Shafag Abdullayeva
+      remarks: "Creating the orders table for storing order information."
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: order_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: references_id
+                  type: bigint
+              - column:
+                  name: proposed_payment
+                  type: numeric(10,2)
+              - column:
+                  name: truck_name_id
+                  type: bigint
+              - column:
+                  name: total_weight
+                  type: numeric(10,2)
+              - column:
+                  name: delivery_route
+                  type: varchar(255)
+              - column:
+                  name: pickup_location
+                  type: varchar(255)
+              - column:
+                  name: delivery_location
+                  type: varchar(255)
+              - column:
+                  name: order_type
+                  type: varchar(50)
+              - column:
+                  name: pickup_date
+                  type: date
+              - column:
+                  name: note
+                  type: varchar(1000)
+              - column:
+                  name: is_active
+                  type: boolean
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: references_id
+            referencedTableName: order_entity_reference
+            referencedColumnNames: references_id
+            constraintName: fk_orders_references
